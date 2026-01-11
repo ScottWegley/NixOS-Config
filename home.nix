@@ -16,6 +16,7 @@
     proton-pass
     protonvpn-gui
     vesktop
+    lact
   ];
 
   programs.vscode = {

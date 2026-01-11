@@ -112,7 +112,7 @@
   environment.systemPackages = with pkgs; [
     git
     wget
-    nixfmt-rfc-style
+    nixfmt
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
