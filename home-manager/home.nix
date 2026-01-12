@@ -57,6 +57,7 @@
     protonvpn-gui
     vesktop
     lact
+    (discord.override { withVencord = true; })
   ];
 
   programs.vscode = {
