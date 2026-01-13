@@ -9,8 +9,15 @@
     # Latest stable branch of nixpkgs, used for version rollback
     nixpkgs-stable.url = "github:nixos/nixpkgs/nixos-25.11";
 
+    # Home-manager, for configuring apps in the user environment
     home-manager = {
       url = "github:nix-community/home-manager/release-25.11";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    # Lanzaboote, our new bootloader
+    lanzaboote = {
+      url = "github:nix-community/lanzaboote/v1.0.0";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
@@ -20,6 +27,7 @@
       self,
       nixpkgs,
       home-manager,
+      lanzaboote,
       ...
     }:
     let
