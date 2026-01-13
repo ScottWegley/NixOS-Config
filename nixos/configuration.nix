@@ -88,7 +88,6 @@
     git
     wget
     nixfmt
-    sbctl
     niv
   ];
 
