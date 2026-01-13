@@ -90,6 +90,14 @@
                   enable = true;
                   pkiBundle = "/var/lib/sbctl";
                 };
+
+                # Add Windows boot entry
+                boot.loader.efi.extraEntries = {
+                  "windows.conf" = ''
+                    title Windows
+                    efi /EFI/Microsoft/Boot/bootmgfw.efi
+                  '';
+                };
               }
             )
           ];

@@ -9,6 +9,5 @@
     ./locale.nix
     ./audio.nix
     ./graphics.nix
-    ./bootloader.nix
   ];
 }
