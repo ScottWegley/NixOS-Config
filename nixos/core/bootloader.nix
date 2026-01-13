@@ -5,8 +5,8 @@
     inputs.lanzaboote.nixosModules.lanzaboote
   ];
 
-  boot.lanzaboote = {
-    enable = true;
-    pkiBundle = "/var/lib/sbctl";
-  };
+  # boot.lanzaboote = {
+  #   enable = true;
+  #   pkiBundle = "/var/lib/sbctl";
+  # };
 }
