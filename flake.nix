@@ -92,7 +92,7 @@
                 };
 
                 # Add Windows boot entry
-                boot.loader.efi.extraEntries = {
+                boot.loader.systemd-boot.extraEntries = {
                   "windows.conf" = ''
                     title Windows
                     efi /EFI/Microsoft/Boot/bootmgfw.efi
