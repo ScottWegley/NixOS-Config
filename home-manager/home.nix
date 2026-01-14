@@ -56,7 +56,6 @@
     proton-pass
     protonvpn-gui
     vesktop
-    lact
     (discord.override { withVencord = true; })
   ];
 

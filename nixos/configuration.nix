@@ -89,6 +89,8 @@
     wget
     nixfmt
     niv
+    lact
+    sbctl
   ];
 
   # Bootloader.
