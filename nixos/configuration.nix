@@ -89,9 +89,12 @@
     wget
     nixfmt
     niv
-    lact
     sbctl
   ];
+
+  systemd.packages = with pkgs; [ lact ];
+  systemd.services.lactd.wantedBy = [ "multi-user.target" ];
+  services.lact.enable = true;
 
   # Bootloader.
   boot.loader.efi.canTouchEfiVariables = true;
