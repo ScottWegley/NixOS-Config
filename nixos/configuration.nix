@@ -16,6 +16,8 @@
     ./hardware-configuration.nix
     # Include all of our core modules
     ./core/default.nix
+    # Include system apps configuration
+    ../sysapps/default.nix
     inputs.home-manager.nixosModules.home-manager
   ];
 
