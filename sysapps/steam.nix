@@ -5,6 +5,6 @@
     enable = true;
     remotePlay.openFirewall = true;
     protontricks.enable = true;
-    extest = true;
+    extest.enable = true;
   };
 }
