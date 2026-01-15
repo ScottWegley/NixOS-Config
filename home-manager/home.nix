@@ -64,6 +64,19 @@
     enable = true;
   };
 
+  programs.calibre = {
+    enable = true;
+    plugins = [
+      (pkgs.fetchzip {
+        url = "https://plugins.calibre-ebook.com/132908.zip";
+        hash = "sha256-DTnsc5GJzs1FkBIPzIgnkKH3PpZCRtZRaHuIKJpbqBs=";
+        stripRoot = false;
+      })
+    ];
+  };
+
+  # To update the plugin, please use the command nix store prefetch-file "https://plugins.calibre-ebook.com/132908.zip" and update the hash above accordingly.
+
   # Add stuff for your user as you see fit:
   # programs.neovim.enable = true;
   # home.packages = with pkgs; [ steam ];

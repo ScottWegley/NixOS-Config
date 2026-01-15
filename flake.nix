@@ -11,7 +11,7 @@
 
     # Home-manager, for configuring apps in the user environment
     home-manager = {
-      url = "github:nix-community/home-manager/release-25.11";
+      url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
