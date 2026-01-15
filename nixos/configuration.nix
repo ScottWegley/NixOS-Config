@@ -67,6 +67,15 @@
 
   networking.hostName = "TERRA-NIXOS"; # Define your hostname.
 
+  networking.firewall = {
+    enable = true;
+    allowedTCPPorts = [
+      8080
+      80
+      443
+    ];
+  };
+
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.scott = {
     isNormalUser = true;
