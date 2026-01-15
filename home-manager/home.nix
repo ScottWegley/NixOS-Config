@@ -54,9 +54,9 @@
     firefox
     floorp-bin
     proton-pass
-    protonvpn-gui
     vesktop
     lact
+    protonvpn-gui
     (discord.override { withVencord = true; })
   ];
 
@@ -66,13 +66,24 @@
 
   programs.calibre = {
     enable = true;
-    plugins = [
-      (pkgs.fetchzip {
-        url = "https://plugins.calibre-ebook.com/132908.zip";
-        hash = "sha256-DTnsc5GJzs1FkBIPzIgnkKH3PpZCRtZRaHuIKJpbqBs=";
-        stripRoot = false;
-      })
-    ];
+  };
+
+  systemd.user.services.start-protonvpn = {
+    Unit = {
+      Description = "Start ProtonVPN on login";
+      After = [ "graphical-session.target" ];
+      Wants = [ "graphical-session.target" ];
+      PartOf = [ "graphical-session.target" ];
+    };
+    Service = {
+      Type = "simple";
+      ExecStart = "${pkgs.protonvpn-gui}/bin/protonvpn-app";
+      Restart = "on-failure";
+      RestartSec = 5;
+    };
+    Install = {
+      WantedBy = [ "graphical-session.target" ];
+    };
   };
 
   # To update the plugin, please use the command nix store prefetch-file "https://plugins.calibre-ebook.com/132908.zip" and update the hash above accordingly.
