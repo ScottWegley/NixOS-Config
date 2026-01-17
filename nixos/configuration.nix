@@ -101,6 +101,7 @@
     nixfmt
     niv
     sbctl
+    local-gpss
   ];
 
   systemd.packages = with pkgs; [ lact ];
