@@ -29,9 +29,9 @@ stdenv.mkDerivation {
     mkdir -p "$out/share/local-gpss"
     cp -r ./* "$out/share/local-gpss/"
 
-    # Expose the binary on PATH with working directory set to share folder
+    # Expose the binary on PATH, copying to persistent user location on first run
     mkdir -p "$out/bin"
     makeWrapper "$out/share/local-gpss/local-gpss" "$out/bin/local-gpss" \
-      --run "cd '$out/share/local-gpss'"
+      --run "mkdir -p ~/.local/share/local-gpss && cp -rn '$out/share/local-gpss'/* ~/.local/share/local-gpss/ && cd ~/.local/share/local-gpss && exec ./local-gpss"
   '';
 }
