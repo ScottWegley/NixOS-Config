@@ -112,6 +112,7 @@
     openrazer-daemon
     razergenie
     input-remapper
+    gh
   ];
 
   services.input-remapper.enable = true;
