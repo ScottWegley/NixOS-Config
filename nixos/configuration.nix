@@ -76,6 +76,9 @@
     ];
   };
 
+  # Use latest kernel from unstable (default nixpkgs input)
+  boot.kernelPackages = pkgs.linuxPackages_latest;
+
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.scott = {
     isNormalUser = true;
@@ -107,7 +110,11 @@
     local-gpss
     polychromatic
     openrazer-daemon
+    razergenie
+    input-remapper
   ];
+
+  services.input-remapper.enable = true;
 
   systemd.packages = with pkgs; [ lact ];
   systemd.services.lactd.wantedBy = [ "multi-user.target" ];

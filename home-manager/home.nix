@@ -58,6 +58,7 @@
     lact
     protonvpn-gui
     (discord.override { withVencord = true; })
+    obsidian
   ];
 
   programs.vscode = {
