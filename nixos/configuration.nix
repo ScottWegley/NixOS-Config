@@ -71,6 +71,7 @@
     enable = true;
     allowedTCPPorts = [
       8080
+      8081
       80
       443
     ];
