@@ -59,6 +59,7 @@
     protonvpn-gui
     (discord.override { withVencord = true; })
     obsidian
+    filezilla
   ];
 
   programs.vscode = {
