@@ -143,6 +143,11 @@
   # Enable CUPS to print documents.
   services.printing.enable = true;
 
+  services.locate = {
+    enable = true;
+    package = pkgs.mlocate;
+  };
+
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
   # programs.mtr.enable = true;
