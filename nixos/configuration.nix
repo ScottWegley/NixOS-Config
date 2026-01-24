@@ -88,6 +88,7 @@
       "networkmanager"
       "wheel"
       "openrazer"
+      "mlocate"
     ];
   };
 
@@ -113,6 +114,7 @@
     razergenie
     input-remapper
     gh
+    mlocate
   ];
 
   services.input-remapper.enable = true;
