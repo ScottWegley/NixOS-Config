@@ -108,7 +108,6 @@
     nixfmt
     niv
     sbctl
-    local-gpss
     polychromatic
     openrazer-daemon
     razergenie
