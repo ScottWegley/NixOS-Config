@@ -76,8 +76,6 @@
   environment.systemPackages = with pkgs; [
     git
     wget
-    nixfmt
-    niv
     sbctl
     polychromatic
     openrazer-daemon
