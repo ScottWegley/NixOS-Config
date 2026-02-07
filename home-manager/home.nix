@@ -55,7 +55,6 @@
     floorp-bin
     proton-pass
     vesktop
-    lact
     protonvpn-gui
     (discord.override { withVencord = true; })
     obsidian
