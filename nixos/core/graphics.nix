@@ -1,3 +1,5 @@
+{ ... }:
+
 {
   # Nvidia Configuration
   hardware.graphics.enable = true;
