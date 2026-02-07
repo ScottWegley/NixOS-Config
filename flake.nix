@@ -31,6 +31,11 @@
       ...
     }:
     let
+      # System-wide identity settings
+      userName = "scott";
+      userDescription = "Scott Wegley";
+      hostName = "TERRA-NIXOS";
+
       # Supported systems for your flake packages, shell, etc.
       systems = [
         "aarch64-linux"
@@ -70,7 +75,14 @@
       # Available through 'nixos-rebuild --flake .#your-hostname'
       nixosConfigurations = {
         TERRA-NIXOS = nixpkgs.lib.nixosSystem {
-          specialArgs = { inherit inputs; };
+          specialArgs = {
+            inherit
+              inputs
+              userName
+              userDescription
+              hostName
+              ;
+          };
           modules = [
             # > Our main nixos configuration file <
             ./nixos/configuration.nix
