@@ -23,6 +23,8 @@
     (discord.override { withVencord = true; })
     obsidian
     filezilla
+    qbittorrent
+    vlc
   ];
 
   programs.vscode = {
