@@ -15,8 +15,10 @@
   };
 
   home.packages = with pkgs; [
+    alejandra
     firefox
     floorp-bin
+    gparted-full
     proton-pass
     vesktop
     protonvpn-gui
