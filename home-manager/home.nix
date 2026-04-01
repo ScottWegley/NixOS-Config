@@ -2,9 +2,7 @@
   pkgs,
   userName,
   ...
-}:
-
-{
+}: {
   imports = [
     # ./nvim.nix
   ];
@@ -22,7 +20,7 @@
     proton-pass
     vesktop
     protonvpn-gui
-    (discord.override { withVencord = true; })
+    (discord.override {withVencord = true;})
     obsidian
     filezilla
     qbittorrent
@@ -42,9 +40,9 @@
   systemd.user.services.start-protonvpn = {
     Unit = {
       Description = "Start ProtonVPN on login";
-      After = [ "graphical-session.target" ];
-      Wants = [ "graphical-session.target" ];
-      PartOf = [ "graphical-session.target" ];
+      After = ["graphical-session.target"];
+      Wants = ["graphical-session.target"];
+      PartOf = ["graphical-session.target"];
     };
     Service = {
       Type = "simple";
@@ -53,7 +51,7 @@
       RestartSec = 5;
     };
     Install = {
-      WantedBy = [ "graphical-session.target" ];
+      WantedBy = ["graphical-session.target"];
     };
   };
 

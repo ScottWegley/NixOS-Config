@@ -6,9 +6,7 @@
   userDescription,
   hostName,
   ...
-}:
-
-{
+}: {
   imports = [
     # Include the results of the hardware scan.
     ./hardware-configuration.nix
@@ -30,24 +28,22 @@
     };
   };
 
-  nix =
-    let
-      flakeInputs = lib.filterAttrs (_: lib.isType "flake") inputs;
-    in
-    {
-      settings = {
-        # Enable flakes and new 'nix' command
-        experimental-features = "nix-command flakes";
-        # Opinionated: disable global registry
-        flake-registry = "";
-      };
-      # Opinionated: disable channels
-      channel.enable = false;
-
-      # Opinionated: make flake registry and nix path match flake inputs
-      registry = lib.mapAttrs (_: flake: { inherit flake; }) flakeInputs;
-      nixPath = lib.mapAttrsToList (n: _: "${n}=flake:${n}") flakeInputs;
+  nix = let
+    flakeInputs = lib.filterAttrs (_: lib.isType "flake") inputs;
+  in {
+    settings = {
+      # Enable flakes and new 'nix' command
+      experimental-features = "nix-command flakes";
+      # Opinionated: disable global registry
+      flake-registry = "";
     };
+    # Opinionated: disable channels
+    channel.enable = false;
+
+    # Opinionated: make flake registry and nix path match flake inputs
+    registry = lib.mapAttrs (_: flake: {inherit flake;}) flakeInputs;
+    nixPath = lib.mapAttrsToList (n: _: "${n}=flake:${n}") flakeInputs;
+  };
 
   boot.kernelPackages = pkgs.linuxPackages_latest;
 
@@ -65,7 +61,7 @@
   home-manager = {
     useGlobalPkgs = true;
     useUserPackages = true;
-    extraSpecialArgs = { inherit inputs userName; };
+    extraSpecialArgs = {inherit inputs userName;};
     users = {
       ${userName} = import ../home-manager/home.nix;
     };
@@ -94,6 +90,15 @@
     package = pkgs.mlocate;
   };
 
-  system.stateVersion = "25.11";
+  security.polkit.enable = true;
 
+  # Symlink user's monitors.xml to GDM so the login screen uses the same monitor config
+  systemd.tmpfiles.rules = let
+    monitorsXmlContent = builtins.readFile "/home/${userName}/.config/monitors.xml";
+    monitorsConfig = pkgs.writeText "gdm_monitors.xml" monitorsXmlContent;
+  in [
+    "L+ /run/gdm/.config/monitors.xml - - - - ${monitorsConfig}"
+  ];
+
+  system.stateVersion = "25.11";
 }
