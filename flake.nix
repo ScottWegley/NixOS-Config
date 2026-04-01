@@ -1,5 +1,4 @@
 {
-
   description = "My system config";
 
   inputs = {
@@ -22,57 +21,53 @@
     };
   };
 
-  outputs =
-    inputs@{
-      self,
-      nixpkgs,
-      home-manager,
-      lanzaboote,
-      ...
-    }:
-    let
-      # System-wide identity settings
-      userName = "scott";
-      userDescription = "Scott Wegley";
-      hostName = "TERRA-NIXOS";
+  outputs = inputs @ {
+    self,
+    nixpkgs,
+    home-manager,
+    lanzaboote,
+    ...
+  }: let
+    # System-wide identity settings
+    userName = "scott";
+    userDescription = "Scott Wegley";
+    hostName = "TERRA-NIXOS";
 
-      # Supported systems for your flake packages, shell, etc.
-      systems = [
-        "aarch64-linux"
-        "i686-linux"
-        "x86_64-linux"
-      ];
-      forAllSystems = nixpkgs.lib.genAttrs systems;
-    in
-    {
-      packages = forAllSystems (
-        system:
-        let
-          pkgs = nixpkgs.legacyPackages.${system};
-        in
+    # Supported systems for your flake packages, shell, etc.
+    systems = [
+      "aarch64-linux"
+      "i686-linux"
+      "x86_64-linux"
+    ];
+    forAllSystems = nixpkgs.lib.genAttrs systems;
+  in {
+    packages = forAllSystems (
+      system: let
+        pkgs = nixpkgs.legacyPackages.${system};
+      in
         import ./pkgs pkgs
-      );
+    );
 
-      formatter = forAllSystems (system: nixpkgs.legacyPackages.${system}.alejandra);
+    formatter = forAllSystems (system: nixpkgs.legacyPackages.${system}.alejandra);
 
-      overlays = import ./overlays { inherit inputs; };
+    overlays = import ./overlays {inherit inputs;};
 
-      nixosConfigurations = {
-        TERRA-NIXOS = nixpkgs.lib.nixosSystem {
-          specialArgs = {
-            inherit
-              inputs
-              userName
-              userDescription
-              hostName
-              ;
-          };
-          modules = [
-            ./nixos/configuration.nix
-
-            lanzaboote.nixosModules.lanzaboote
-          ];
+    nixosConfigurations = {
+      TERRA-NIXOS = nixpkgs.lib.nixosSystem {
+        specialArgs = {
+          inherit
+            inputs
+            userName
+            userDescription
+            hostName
+            ;
         };
+        modules = [
+          ./nixos/configuration.nix
+
+          lanzaboote.nixosModules.lanzaboote
+        ];
       };
     };
+  };
 }
