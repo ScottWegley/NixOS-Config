@@ -1,6 +1,4 @@
-{ ... }:
-
-{
+{...}: {
   imports = [
     ./locale.nix
     ./audio.nix
@@ -8,5 +6,6 @@
     ./bootloader.nix
     ./networking.nix
     ./desktop.nix
+    ./rdp.nix
   ];
 }
