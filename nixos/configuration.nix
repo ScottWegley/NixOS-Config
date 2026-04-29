@@ -86,6 +86,7 @@
     input-remapper
     gh
     mlocate
+    qdirstat
   ];
 
   services.input-remapper.enable = true;
