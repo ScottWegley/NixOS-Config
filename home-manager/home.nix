@@ -19,7 +19,7 @@
     gparted-full
     proton-pass
     vesktop
-    protonvpn-gui
+    proton-vpn
     (discord.override {withVencord = true;})
     obsidian
     filezilla
