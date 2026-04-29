@@ -44,11 +44,11 @@
     registry = lib.mapAttrs (_: flake: {inherit flake;}) flakeInputs;
     nixPath = lib.mapAttrsToList (n: _: "${n}=flake:${n}") flakeInputs;
 
-    # Automatic garbage collection: keep only the last 10 generations
+    # Automatic garbage collection: keep only the last 5 generations
     gc = {
       automatic = true;
       dates = "weekly";
-      options = "--delete-older-than +10";
+      options = "--delete-older-than +5";
     };
   };
 
