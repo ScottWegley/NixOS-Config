@@ -33,8 +33,6 @@
 
   programs.calibre = {
     enable = true;
-    # Pinned to stable due to broken Qt6/qmake build on unstable (2026-02-28)
-    package = pkgs.stable.calibre;
   };
 
   systemd.user.services.start-protonvpn = {
@@ -46,7 +44,7 @@
     };
     Service = {
       Type = "simple";
-      ExecStart = "${pkgs.protonvpn-gui}/bin/protonvpn-app";
+      ExecStart = "${pkgs.proton-vpn}/bin/protonvpn-app";
       Restart = "on-failure";
       RestartSec = 5;
     };

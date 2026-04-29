@@ -20,6 +20,18 @@ sudo nixos-rebuild switch --flake <path_to_folder_with_flake.nix>
 ```
 Builds and activates the configuration from the current `flake.lock`.  The `--upgrade` flag is a **channels** feature and has no effect here since channels are disabled.  The correct workflow is: run `nix flake update` first, then `nixos-rebuild switch`.
 
+### Garbage collection
+```
+sudo nix-collect-garbage -d
+```
+Deletes all unreachable Nix store paths and frees space after old generations are removed.
+
+To keep only the last 5 system generations before collecting garbage:
+```
+sudo nix-env --delete-generations +5 --profile /nix/var/nix/profiles/system
+sudo nix-collect-garbage -d
+```
+
 ## Structure
 
 ### `flake.nix`
@@ -53,6 +65,7 @@ Modularized core system configuration, united by `default.nix` which imports:
 | `graphics.nix` | Nvidia GPU drivers (open kernel module), X11, and keyboard layout |
 | `locale.nix` | Timezone (America/Phoenix) and locale settings (en_US.UTF-8) |
 | `networking.nix` | Hostname, firewall rules, and NetworkManager |
+| `rdp.nix` | Configuration for the RDP Service, system behavior modifications to support RDP |
 
 ### `sysapps/`
 System-level application configurations that enable NixOS modules (as opposed to user-level apps in Home Manager).  Currently contains:
