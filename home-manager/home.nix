@@ -20,7 +20,8 @@
     proton-pass
     vesktop
     proton-vpn
-    (discord.override {withVencord = true;})
+    # (discord.override {withVencord = true;})
+    discord
     obsidian
     filezilla
     qbittorrent
@@ -32,6 +33,10 @@
   };
 
   programs.calibre = {
+    enable = true;
+  };
+
+  programs.obs-studio = {
     enable = true;
   };
 
