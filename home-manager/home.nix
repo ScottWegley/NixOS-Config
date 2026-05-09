@@ -7,6 +7,10 @@
     # ./nvim.nix
   ];
 
+  home.sessionVariables = {
+    "__NV_DISABLE_EXPLICIT_SYNC" = "1"; # Workaround for OBS-Studio crashing when you send a scene to a projector.
+  };
+
   home = {
     username = userName;
     homeDirectory = "/home/${userName}";
