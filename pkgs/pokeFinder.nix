@@ -1,5 +1,9 @@
-{ stdenv, fetchurl, autoPatchelfHook, qt6 }:
-
+{
+  stdenv,
+  fetchurl,
+  autoPatchelfHook,
+  qt6,
+}:
 stdenv.mkDerivation rec {
   pname = "pokeFinder";
   version = "4.3.2";
@@ -11,8 +15,8 @@ stdenv.mkDerivation rec {
 
   sourceRoot = ".";
 
-  nativeBuildInputs = [ autoPatchelfHook qt6.wrapQtAppsHook ];
-  buildInputs = [ qt6.qtbase qt6.qttools ];
+  nativeBuildInputs = [autoPatchelfHook qt6.wrapQtAppsHook];
+  buildInputs = [qt6.qtbase qt6.qttools];
 
   installPhase = ''
     mkdir -p $out/bin
