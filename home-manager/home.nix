@@ -14,6 +14,18 @@
 
   nixpkgs.config.allowUnfree = true;
 
+  programs.vscode = {
+    enable = true;
+  };
+
+  programs.calibre = {
+    enable = true;
+  };
+
+  programs.obs-studio = {
+    enable = true;
+  };
+
   home.packages = with pkgs; [
     alejandra
     firefox
@@ -29,19 +41,11 @@
     qbittorrent
     vlc
     pokeFinder
+    (pkgs.writeShellScriptBin "obs-studio" ''
+      export __NV_DISABLE_EXPLICIT_SYNC=1
+      exec ${pkgs.obs-studio}/bin/obs "$@"
+    '') # Workaround for projector crash in OBS
   ];
-
-  programs.vscode = {
-    enable = true;
-  };
-
-  programs.calibre = {
-    enable = true;
-  };
-
-  programs.obs-studio = {
-    enable = true;
-  };
 
   systemd.user.services.start-protonvpn = {
     Unit = {
