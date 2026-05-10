@@ -73,7 +73,7 @@ System-level application configurations that enable NixOS modules (as opposed to
 
 ### `home-manager/home.nix`
 User-level configuration managed by Home Manager (running as a NixOS module).  Uses `useGlobalPkgs` so it shares the system's nixpkgs instance and overlays.  Manages:
-- **User packages**: Firefox, Floorp, Proton Pass, Vesktop, Discord (with Vencord), ProtonVPN, Obsidian, FileZilla.
+- **User packages**: Firefox, Floorp, Proton Pass, Vesktop, Discord (with Vencord), ProtonVPN, Obsidian, FileZilla, PokeFinder.
 - **Programs**: VS Code, Calibre, Git.
 - **User services**: ProtonVPN auto-start on login.
 

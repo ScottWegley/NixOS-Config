@@ -16,6 +16,8 @@
     homeDirectory = "/home/${userName}";
   };
 
+  nixpkgs.config.allowUnfree = true;
+
   home.packages = with pkgs; [
     alejandra
     firefox
@@ -30,6 +32,7 @@
     filezilla
     qbittorrent
     vlc
+    pokeFinder
   ];
 
   programs.vscode = {

@@ -69,5 +69,29 @@
         ];
       };
     };
+
+    homeConfigurations = {
+      "${userName}@${hostName}" = home-manager.lib.homeManagerConfiguration {
+        pkgs = import nixpkgs {
+          system = "x86_64-linux";
+          overlays = [
+            self.overlays.additions
+            self.overlays.modifications
+            self.overlays.stable-packages
+          ];
+        };
+        extraSpecialArgs = {
+          inherit
+            inputs
+            userName
+            userDescription
+            hostName
+            ;
+        };
+        modules = [
+          ./home-manager/home.nix
+        ];
+      };
+    };
   };
 }
