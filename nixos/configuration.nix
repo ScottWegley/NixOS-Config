@@ -98,6 +98,12 @@
     package = pkgs.mlocate;
   };
 
+  services.udev.packages = with pkgs; [game-devices-udev-rules];
+  # Disable the PCIE combo bluetooth adapter in favor of USB bluetooth adapter.
+  services.udev.extraRules = ''
+    SUBSYSTEM=="usb", ATTR{idVendor}=="8087", ATTR{idProduct}=="0038", ATTR{authorized}="0"
+  '';
+
   security.polkit.enable = true;
 
   # Symlink user's monitors.xml to GDM so the login screen uses the same monitor config
