@@ -12,8 +12,6 @@
     homeDirectory = "/home/${userName}";
   };
 
-  nixpkgs.config.allowUnfree = true;
-
   programs.vscode = {
     enable = true;
   };
@@ -23,6 +21,10 @@
   };
 
   programs.obs-studio = {
+    enable = true;
+  };
+
+  programs.fastfetch = {
     enable = true;
   };
 
