@@ -10,7 +10,7 @@
 
     # Home-manager, for configuring apps in the user environment
     home-manager = {
-      url = "github:nix-community/home-manager";
+      url = "github:nix-community/home-manager/release-26.05"; # Pinning to 26.05 until I pull 26.11 (nixpkgs-unstable)
       inputs.nixpkgs.follows = "nixpkgs";
     };
 

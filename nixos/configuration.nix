@@ -60,7 +60,7 @@
     extraGroups = [
       "networkmanager"
       "wheel"
-      "openrazer"
+      # "openrazer"  # TODO: restore when openrazer is fixed
       "mlocate"
     ];
   };
@@ -74,15 +74,15 @@
     };
   };
 
-  hardware.openrazer.enable = true;
+  # hardware.openrazer.enable = true;  # TODO: uncomment when openrazer supports kernel 7.0.10+
 
   environment.systemPackages = with pkgs; [
     git
     wget
     sbctl
-    polychromatic
-    openrazer-daemon
-    razergenie
+    # polychromatic  # TODO: restore when openrazer is fixed
+    # openrazer-daemon  # TODO: restore when openrazer is fixed
+    # razergenie  # TODO: restore when openrazer is fixed
     input-remapper
     gh
     mlocate
