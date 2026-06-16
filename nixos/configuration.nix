@@ -86,7 +86,14 @@
     gh
     mlocate
     qdirstat
+    gsettings-desktop-schemas
+    kdePackages.kdenlive
   ];
+
+  environment.sessionVariables = {
+    QT_QPA_PLATFORMTHEME = "generic";
+    QT_STYLE_OVERRIDE = "fusion";
+  };
 
   services.input-remapper.enable = true;
 
