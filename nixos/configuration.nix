@@ -88,6 +88,7 @@
     qdirstat
     gsettings-desktop-schemas
     kdePackages.kdenlive
+    localsend
   ];
 
   environment.sessionVariables = {

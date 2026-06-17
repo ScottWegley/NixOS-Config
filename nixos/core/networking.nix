@@ -1,6 +1,4 @@
-{ hostName, ... }:
-
-{
+{hostName, ...}: {
   networking.hostName = hostName;
 
   networking.firewall = {
@@ -9,6 +7,7 @@
       8080
       80
       443
+      53317
     ];
   };
 
