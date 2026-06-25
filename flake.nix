@@ -35,8 +35,6 @@
 
     # Supported systems for your flake packages, shell, etc.
     systems = [
-      "aarch64-linux"
-      "i686-linux"
       "x86_64-linux"
     ];
     forAllSystems = nixpkgs.lib.genAttrs systems;
@@ -79,6 +77,7 @@
             self.overlays.modifications
             self.overlays.stable-packages
           ];
+          config = {allowUnfree = true;};
         };
         extraSpecialArgs = {
           inherit

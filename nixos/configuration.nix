@@ -6,7 +6,34 @@
   userDescription,
   hostName,
   ...
-}: {
+}: let
+  coreTools = with pkgs; [
+    git
+    wget
+    gh
+    sbctl
+  ];
+
+  hardwareTools = with pkgs; [
+    polychromatic
+    openrazer-daemon
+    razergenie
+    input-remapper
+  ];
+
+  desktopApps = with pkgs; [
+    qdirstat
+    gsettings-desktop-schemas
+    kdePackages.kdenlive
+    localsend
+    eden
+    unrar
+  ];
+
+  searchTools = with pkgs; [
+    mlocate
+  ];
+in {
   imports = [
     # Include the results of the hardware scan.
     ./hardware-configuration.nix
@@ -33,7 +60,7 @@
   in {
     settings = {
       # Enable flakes and new 'nix' command
-      experimental-features = "nix-command flakes";
+      experimental-features = ["nix-command" "flakes"];
       # Opinionated: disable global registry
       flake-registry = "";
     };
@@ -60,7 +87,7 @@
     extraGroups = [
       "networkmanager"
       "wheel"
-      "openrazer" # TODO: restore when openrazer is fixed
+      "openrazer"
       "mlocate"
     ];
   };
@@ -75,22 +102,11 @@
   };
 
   hardware.openrazer.enable = true;
-  environment.systemPackages = with pkgs; [
-    git
-    wget
-    sbctl
-    polychromatic
-    openrazer-daemon
-    razergenie
-    input-remapper
-    gh
-    mlocate
-    qdirstat
-    gsettings-desktop-schemas
-    kdePackages.kdenlive
-    localsend
-    eden
-    unrar
+  environment.systemPackages = lib.concatLists [
+    coreTools
+    hardwareTools
+    desktopApps
+    searchTools
   ];
 
   environment.sessionVariables = {

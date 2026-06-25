@@ -2,7 +2,40 @@
   pkgs,
   userName,
   ...
-}: {
+}: let
+  coreTools = with pkgs; [
+    alejandra
+  ];
+
+  browsers = with pkgs; [
+    firefox
+    floorp-bin
+  ];
+
+  communication = with pkgs; [
+    proton-pass
+    proton-vpn
+    discord
+    filezilla
+  ];
+
+  media = with pkgs; [
+    obsidian
+    qbittorrent
+    vlc
+    gparted-full
+    vesktop
+  ];
+
+  customApps = with pkgs; [
+    pokeFinder
+  ];
+
+  obsStudioWrapper = pkgs.writeShellScriptBin "obs-studio" ''
+    export __NV_DISABLE_EXPLICIT_SYNC=1
+    exec ${pkgs.obs-studio}/bin/obs "$@"
+  '';
+in {
   imports = [
     # ./nvim.nix
   ];
@@ -28,25 +61,13 @@
     enable = true;
   };
 
-  home.packages = with pkgs; [
-    alejandra
-    firefox
-    floorp-bin
-    gparted-full
-    proton-pass
-    vesktop
-    proton-vpn
-    # (discord.override {withVencord = true;})
-    discord
-    obsidian
-    filezilla
-    qbittorrent
-    vlc
-    pokeFinder
-    (pkgs.writeShellScriptBin "obs-studio" ''
-      export __NV_DISABLE_EXPLICIT_SYNC=1
-      exec ${pkgs.obs-studio}/bin/obs "$@"
-    '') # Workaround for projector crash in OBS
+  home.packages = pkgs.lib.concatLists [
+    coreTools
+    browsers
+    communication
+    media
+    customApps
+    [obsStudioWrapper]
   ];
 
   systemd.user.services.start-protonvpn = {
@@ -67,7 +88,6 @@
     };
   };
 
-  programs.home-manager.enable = true;
   programs.git.enable = true;
 
   # Nicely reload system units when changing configs
