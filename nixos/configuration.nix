@@ -89,6 +89,8 @@
     gsettings-desktop-schemas
     kdePackages.kdenlive
     localsend
+    eden
+    unrar
   ];
 
   environment.sessionVariables = {
@@ -113,13 +115,10 @@
 
   security.polkit.enable = true;
 
-  # Symlink user's monitors.xml to GDM so the login screen uses the same monitor config
-  systemd.tmpfiles.rules = let
-    monitorsXmlContent = builtins.readFile "/home/${userName}/.config/monitors.xml";
-    monitorsConfig = pkgs.writeText "gdm_monitors.xml" monitorsXmlContent;
-  in [
-    "L+ /run/gdm/.config/monitors.xml - - - - ${monitorsConfig}"
-  ];
+  # Previously symlinked monitors.xml from Nix store; removed in favor of
+  # a Wayland-native ApplyMonitorsConfig approach (managed by home-manager).
+  # No tmpfiles rules here now; the user's ~/.config/monitors.xml is writable.
+  systemd.tmpfiles.rules = [];
 
   system.stateVersion = "25.11";
 }
