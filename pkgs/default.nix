@@ -3,4 +3,5 @@
 pkgs: {
   # example = pkgs.callPackage ./example { };
   pokeFinder = pkgs.callPackage ./pokeFinder.nix {};
+  linuxArctisManager = pkgs.callPackage ./linuxArctisManager.nix {};
 }

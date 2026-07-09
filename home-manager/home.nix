@@ -5,10 +5,13 @@
 }: let
   coreTools = with pkgs; [
     alejandra
+    git
+    wget
+    gh
+    sbctl
   ];
 
   browsers = with pkgs; [
-    firefox
     floorp-bin
   ];
 
@@ -27,8 +30,21 @@
     vesktop
   ];
 
+  userTools = with pkgs; [
+    polychromatic
+    razergenie
+    qdirstat
+    gsettings-desktop-schemas
+    kdePackages.kdenlive
+    localsend
+    eden
+    dolphin-emu
+    unrar
+  ];
+
   customApps = with pkgs; [
     pokeFinder
+    linuxArctisManager
   ];
 
   obsStudioWrapper = pkgs.writeShellScriptBin "obs-studio" ''
@@ -53,10 +69,6 @@ in {
     enable = true;
   };
 
-  programs.obs-studio = {
-    enable = true;
-  };
-
   programs.fastfetch = {
     enable = true;
   };
@@ -66,6 +78,7 @@ in {
     browsers
     communication
     media
+    userTools
     customApps
     [obsStudioWrapper]
   ];
@@ -80,6 +93,24 @@ in {
     Service = {
       Type = "simple";
       ExecStart = "${pkgs.proton-vpn}/bin/protonvpn-app";
+      Restart = "on-failure";
+      RestartSec = 5;
+    };
+    Install = {
+      WantedBy = ["graphical-session.target"];
+    };
+  };
+
+  systemd.user.services.arctis-manager = {
+    Unit = {
+      Description = "Linux Arctis Manager daemon";
+      After = ["graphical-session.target"];
+      Wants = ["graphical-session.target"];
+      PartOf = ["graphical-session.target"];
+    };
+    Service = {
+      Type = "simple";
+      ExecStart = "${pkgs.linuxArctisManager}/bin/lam-daemon";
       Restart = "on-failure";
       RestartSec = 5;
     };

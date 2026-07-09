@@ -7,27 +7,9 @@
   hostName,
   ...
 }: let
-  coreTools = with pkgs; [
-    git
-    wget
-    gh
-    sbctl
-  ];
-
   hardwareTools = with pkgs; [
-    polychromatic
     openrazer-daemon
-    razergenie
     input-remapper
-  ];
-
-  desktopApps = with pkgs; [
-    qdirstat
-    gsettings-desktop-schemas
-    kdePackages.kdenlive
-    localsend
-    eden
-    unrar
   ];
 
   searchTools = with pkgs; [
@@ -103,9 +85,7 @@ in {
 
   hardware.openrazer.enable = true;
   environment.systemPackages = lib.concatLists [
-    coreTools
     hardwareTools
-    desktopApps
     searchTools
   ];
 
@@ -125,16 +105,39 @@ in {
 
   services.udev.packages = with pkgs; [game-devices-udev-rules];
   # Disable the PCIE combo bluetooth adapter in favor of USB bluetooth adapter.
+  # Also grant access to SteelSeries Arctis devices for Linux Arctis Manager.
   services.udev.extraRules = ''
     SUBSYSTEM=="usb", ATTR{idVendor}=="8087", ATTR{idProduct}=="0038", ATTR{authorized}="0"
+
+    ACTION=="remove", GOTO="local_end"
+
+    # SteelSeries Arctis Nova Pro Wireless
+    SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTRS{idVendor}=="1038", ATTRS{idProduct}=="12e0|12e5|225d", MODE="0666", TAG+="uaccess"
+
+    # SteelSeries Arctis Nova 5 Wireless
+    SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTRS{idVendor}=="1038", ATTRS{idProduct}=="2232|2253|2264", MODE="0666", TAG+="uaccess"
+
+    # SteelSeries Arctis Nova 7
+    SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTRS{idVendor}=="1038", ATTRS{idProduct}=="22a1|227e|2258|229e|22a9|22a5", MODE="0666", TAG+="uaccess"
+
+    # SteelSeries Arctis Nova Pro
+    SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTRS{idVendor}=="1038", ATTRS{idProduct}=="12cd|12cb", MODE="0666", TAG+="uaccess"
+
+    # SteelSeries Arctis Nova 7 (discrete battery)
+    SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTRS{idVendor}=="1038", ATTRS{idProduct}=="2202|2206|22a4|223a|227a|22ab", MODE="0666", TAG+="uaccess"
+
+    # SteelSeries Arctis 7+
+    SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTRS{idVendor}=="1038", ATTRS{idProduct}=="220e|2212|2216|2236", MODE="0666", TAG+="uaccess"
+
+    LABEL="local_end"
   '';
 
   security.polkit.enable = true;
 
-  # Previously symlinked monitors.xml from Nix store; removed in favor of
-  # a Wayland-native ApplyMonitorsConfig approach (managed by home-manager).
-  # No tmpfiles rules here now; the user's ~/.config/monitors.xml is writable.
-  systemd.tmpfiles.rules = [];
+  # Some Python/DBus clients expect /var/lib/dbus/machine-id to exist.
+  systemd.tmpfiles.rules = [
+    "L /var/lib/dbus/machine-id - - - - /etc/machine-id"
+  ];
 
   system.stateVersion = "25.11";
 }
