@@ -103,6 +103,28 @@ in {
     package = pkgs.mlocate;
   };
 
+  fileSystems."/mnt/nix-extra" = {
+    device = "/dev/disk/by-uuid/976723e9-8d65-4359-8b72-b1cfdc3e0a8e";
+    fsType = "ext4";
+    options = ["nofail" "x-systemd.automount" "x-systemd.device-timeout=5s"];
+  };
+
+  fileSystems."/mnt/windows-data" = {
+    device = "/dev/disk/by-uuid/8A54CE4654CE352B";
+    fsType = "ntfs";
+    options = ["nofail" "x-systemd.automount" "x-systemd.device-timeout=5s"];
+  };
+
+  fileSystems."/mnt/windows-extra" = {
+    device = "/dev/disk/by-uuid/8E0407BA0407A3F5";
+    fsType = "ntfs";
+    options = ["nofail" "x-systemd.automount" "x-systemd.device-timeout=5s"];
+  };
+
+  users.users.root = {
+    hashedPassword = "$6$2fub6/mLuccjczvb$PIU0fYWodOCM5DsyMHQmKAx9DtPDjSOeB5dwodbogJYBt6M8hmIhAaMImeE8GjUQJHlYupVonqAYBBarYtCj00";
+  };
+
   services.udev.packages = with pkgs; [game-devices-udev-rules];
   # Disable the PCIE combo bluetooth adapter in favor of USB bluetooth adapter.
   # Also grant access to SteelSeries Arctis devices for Linux Arctis Manager.
