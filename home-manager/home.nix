@@ -73,6 +73,19 @@ in {
     enable = true;
   };
 
+  programs.ssh = {
+    enable = true;
+    enableDefaultConfig = false;
+    settings = {
+      "*" = {
+        AddKeysToAgent = "yes";
+        IdentityFile = "~/.ssh/Obsidian_Pokemon-Playthroughs-Vault";
+      };
+    };
+  };
+
+  services.ssh-agent.enable = true;
+
   home.packages = pkgs.lib.concatLists [
     coreTools
     browsers
@@ -82,24 +95,6 @@ in {
     customApps
     [obsStudioWrapper]
   ];
-
-  systemd.user.services.start-protonvpn = {
-    Unit = {
-      Description = "Start ProtonVPN on login";
-      After = ["graphical-session.target"];
-      Wants = ["graphical-session.target"];
-      PartOf = ["graphical-session.target"];
-    };
-    Service = {
-      Type = "simple";
-      ExecStart = "${pkgs.proton-vpn}/bin/protonvpn-app";
-      Restart = "on-failure";
-      RestartSec = 5;
-    };
-    Install = {
-      WantedBy = ["graphical-session.target"];
-    };
-  };
 
   systemd.user.services.arctis-manager = {
     Unit = {
