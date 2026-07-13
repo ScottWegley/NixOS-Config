@@ -16,7 +16,7 @@
 
     # Lanzaboote, our new bootloader
     lanzaboote = {
-      url = "github:nix-community/lanzaboote/v1.0.0";
+      url = "github:nix-community/lanzaboote/master";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };

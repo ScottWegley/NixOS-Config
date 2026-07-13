@@ -9,7 +9,6 @@
 }: let
   hardwareTools = with pkgs; [
     openrazer-daemon
-    input-remapper
   ];
 
   searchTools = with pkgs; [
@@ -94,7 +93,6 @@ in {
     QT_STYLE_OVERRIDE = "fusion";
   };
 
-  services.input-remapper.enable = true;
 
   services.lact.enable = true;
 
