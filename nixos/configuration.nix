@@ -93,7 +93,6 @@ in {
     QT_STYLE_OVERRIDE = "fusion";
   };
 
-
   services.lact.enable = true;
 
   services.locate = {
@@ -153,11 +152,6 @@ in {
   '';
 
   security.polkit.enable = true;
-
-  # Some Python/DBus clients expect /var/lib/dbus/machine-id to exist.
-  systemd.tmpfiles.rules = [
-    "L /var/lib/dbus/machine-id - - - - /etc/machine-id"
-  ];
 
   system.stateVersion = "25.11";
 }

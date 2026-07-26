@@ -76,12 +76,6 @@ in {
   programs.ssh = {
     enable = true;
     enableDefaultConfig = false;
-    settings = {
-      "*" = {
-        AddKeysToAgent = "yes";
-        IdentityFile = "~/.ssh/Obsidian_Pokemon-Playthroughs-Vault";
-      };
-    };
   };
 
   services.ssh-agent.enable = true;
