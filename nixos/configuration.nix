@@ -158,7 +158,7 @@ in {
   system.activationScripts.enable-linger = {
     text = ''
       # enable linger for the main user; ignore errors if already set
-      loginctl enable-linger ${toString userName} || true
+      /run/current-system/sw/bin/loginctl enable-linger ${toString userName} || true
     '';
   };
 
@@ -169,20 +169,6 @@ in {
     AutomaticLoginEnable=true
     AutomaticLogin=${toString userName}
   '';
-
-  # Systemd oneshot service that runs after the display manager to lock
-  # the autologin session. It sleeps briefly to allow the session to be
-  # fully initialized, then locks all sessions via loginctl.
-  systemd.services.lock-after-boot = {
-    description = "Lock autologin session after boot";
-    wantedBy = ["multi-user.target"];
-    after = ["graphical.target" "display-manager.service"];
-    serviceConfig = {
-      Type = "oneshot";
-      ExecStartPre = "/run/current-system/sw/bin/sleep 10";
-      ExecStart = "/run/current-system/sw/bin/loginctl lock-sessions";
-    };
-  };
 
   system.stateVersion = "25.11";
 }
