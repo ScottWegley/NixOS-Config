@@ -156,32 +156,31 @@ in {
   # Enable lingering for the main user so user units can run without an
   # interactive login (keeps the --user systemd instance running).
   system.activationScripts.enable-linger = {
-      text = ''
-        # enable linger for the main user; ignore errors if already set
-        loginctl enable-linger ${toString userName} || true
-      '';
-    };
-
-    # Provide a GDM custom.conf. Enable automatic login for the main user.
-    # Force it so it wins over the module-provided default file.
-    environment.etc."gdm/custom.conf".text = lib.mkForce ''
-      [daemon]
-      AutomaticLoginEnable=true
-      AutomaticLogin=${toString userName}
+    text = ''
+      # enable linger for the main user; ignore errors if already set
+      loginctl enable-linger ${toString userName} || true
     '';
+  };
 
-    # Systemd oneshot service that runs after the display manager to lock
-    # the autologin session. It sleeps briefly to allow the session to be
-    # fully initialized, then locks all sessions via loginctl.
-    systemd.services.lock-after-boot = {
-      description = "Lock autologin session after boot";
-      wantedBy = [ "multi-user.target" ];
-      after = [ "graphical.target" "display-manager.service" ];
-      serviceConfig = {
-        Type = "oneshot";
-        ExecStartPre = "/run/current-system/sw/bin/sleep 10";
-        ExecStart = "/run/current-system/sw/bin/loginctl lock-sessions";
-      };
+  # Provide a GDM custom.conf. Enable automatic login for the main user.
+  # Force it so it wins over the module-provided default file.
+  environment.etc."gdm/custom.conf".text = lib.mkForce ''
+    [daemon]
+    AutomaticLoginEnable=true
+    AutomaticLogin=${toString userName}
+  '';
+
+  # Systemd oneshot service that runs after the display manager to lock
+  # the autologin session. It sleeps briefly to allow the session to be
+  # fully initialized, then locks all sessions via loginctl.
+  systemd.services.lock-after-boot = {
+    description = "Lock autologin session after boot";
+    wantedBy = ["multi-user.target"];
+    after = ["graphical.target" "display-manager.service"];
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStartPre = "/run/current-system/sw/bin/sleep 10";
+      ExecStart = "/run/current-system/sw/bin/loginctl lock-sessions";
     };
   };
 
