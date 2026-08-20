@@ -2,9 +2,7 @@
 
 ## Purpose
 
-This document is intended to serve as a refresher to myself about the intricacies of my NixOS configuration.  This is my first NixOS installation, so there are bound to be plenty of mistakes present, but my goal is to fully switch over to NixOS from Windows 10/11.  I have a minor to moderate amount of experience with Linux (not a sys admin but not afraid of the terminal) so I have high hopes that I will be able to fully transition within a few months.
-
-In an ideal world, I would just fully switch over and figure it out, but I don't have enough free time to get my Nix system to have functional equivalence to my current Windows systems.  My strategy for now is just to dual-boot and work on setting up NixOS a little bit every week.
+This document is intended to serve as a refresher to myself about the intricacies of my NixOS configuration.
 
 ## Common Commands
 
