@@ -14,7 +14,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # Lanzaboote, our new bootloader
+    # Lanzaboote, our bootloader
     lanzaboote = {
       url = "github:nix-community/lanzaboote/master";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -33,7 +33,7 @@
     userDescription = "Scott Wegley";
     hostName = "TERRA-NIXOS";
 
-    # Supported systems for your flake packages, shell, etc.
+    # Supported systems for flake packages, shell, etc.
     systems = [
       "x86_64-linux"
     ];

@@ -14,6 +14,10 @@
   searchTools = with pkgs; [
     mlocate
   ];
+
+  miscTools = with pkgs; [
+    mgba
+  ];
 in {
   imports = [
     # Include the results of the hardware scan.
@@ -21,7 +25,7 @@ in {
     # Include all of our core modules
     ./core/default.nix
     # Include system apps configuration
-    ../sysapps/default.nix
+    ./sysapps/default.nix
     inputs.home-manager.nixosModules.home-manager
   ];
 
@@ -86,6 +90,7 @@ in {
   environment.systemPackages = lib.concatLists [
     hardwareTools
     searchTools
+    miscTools
   ];
 
   environment.sessionVariables = {
@@ -155,6 +160,7 @@ in {
 
   # Enable lingering for the main user so user units can run without an
   # interactive login (keeps the --user systemd instance running).
+  # Necessary for RDP after boot or session termination
   system.activationScripts.enable-linger = {
     text = ''
       # enable linger for the main user; ignore errors if already set
@@ -164,6 +170,7 @@ in {
 
   # Provide a GDM custom.conf. Enable automatic login for the main user.
   # Force it so it wins over the module-provided default file.
+  # Necessary for RDP after boot
   environment.etc."gdm/custom.conf".text = lib.mkForce ''
     [daemon]
     AutomaticLoginEnable=true
