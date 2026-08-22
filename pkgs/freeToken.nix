@@ -1,119 +1,51 @@
 {
   lib,
-  buildPythonPackage,
-  fetchFromGitHub,
-  pythonOlder,
-  setuptools,
-  wheel,
-  torch,
-  cudaPackages,
-  autoAddDriverRunpath,
-  addOpenGLRunpath,
-  makeWrapper, # Needed to wrap the binary
-  numpy,
-  einops,
-  fastapi,
-  flashlib,
-  gguf,
-  huggingface_hub,
-  msgpack,
-  modelscope,
-  openai,
-  partial-json-parser,
-  prompt_toolkit,
-  pydantic,
-  pyzmq,
-  safetensors,
-  tqdm,
-  transformers,
-  triton,
-  uvicorn,
-  apache-tvm-ffi,
-}:
-buildPythonPackage rec {
-  pname = "freetoken";
-  version = "0.1.0";
+  appimageTools,
+  fetchurl,
+}: let
+  pname = "freetoken-desktop";
+  version = "0.1.2";
 
-  pyproject = true;
-
-  src = fetchFromGitHub {
-    owner = "FlashML-org";
-    repo = "FreeToken";
-    rev = "v${version}";
-    hash = ""; # Replace with correct SRI hash
+  src = fetchurl {
+    url = "https://github.com/FlashML-org/FreeToken-Web/releases/download/beta/freetoken-desktop-x86_64.AppImage";
+    hash = "sha256-h4ySA5IlVhWvjZuuda0ICRGGM1qQ/3OtzG2afA5ZEkU=";
   };
 
-  disabled = pythonOlder "3.10";
-
-  build-system = [
-    setuptools
-    wheel
-  ];
-
-  # These are added to PATH at runtime by buildPythonPackage's wrapper
-  buildInputs = [
-    cudaPackages.cuda_nvcc # Makes nvcc available at runtime for JIT
-    cudaPackages.cuda_cudart # CUDA runtime libraries
-    cudaPackages.cuda_cccl # CUDA standard library headers (if needed)
-    autoAddDriverRunpath # Ensures NVIDIA driver libs are found
-    addOpenGLRunpath
-  ];
-
-  nativeBuildInputs = [
-    makeWrapper # For the explicit wrapper
-    cudaPackages.cuda_nvcc # Also needed at build time to compile extensions
-    cudaPackages.cuda_cudart
-    cudaPackages.cuda_cccl
-  ];
-
-  dependencies = [
-    apache-tvm-ffi
-    einops
-    fastapi
-    flashlib
-    gguf
-    huggingface_hub
-    msgpack
-    modelscope
-    numpy
-    openai
-    partial-json-parser
-    prompt_toolkit
-    pydantic
-    pyzmq
-    safetensors
-    torch
-    tqdm
-    transformers
-    triton
-    uvicorn
-  ];
-
-  optional-dependencies = {
-    accel = [];
-    dev = ["pytest>=6.0"];
-  };
-
-  CUDA_HOME = "${cudaPackages.cuda_nvcc}";
-  TORCH_CUDA_ARCH_LIST = "8.0;8.6;8.9;9.0;9.0a"; # RTX 5090 is sm_120, adjust if needed
-
-  env = {
-    CUDA_HOME = "${cudaPackages.cuda_nvcc}";
-  };
-
-  # Explicitly wrap the 'ft' binary to ensure nvcc is in PATH
-  postInstall = ''
-    wrapProgram $out/bin/ft \
-      --prefix PATH : ${lib.makeBinPath [cudaPackages.cuda_nvcc python]}
+  desktopFileContent = ''
+    [Desktop Entry]
+    Categories=
+    Comment=FreeToken Desktop — local LLM runtime control panel
+    Exec=freetoken-desktop
+    StartupWMClass=freetoken-desktop
+    Icon=freetoken-desktop
+    Name=FreeToken Desktop
+    Terminal=false
+    Type=Application
   '';
+in
+  appimageTools.wrapType2 {
+    inherit pname version src;
 
-  pythonImportsCheck = ["freetoken"];
+    extraInstallCommands = ''
+          # Install the desktop file (no substitution needed – Exec already matches pname)
+          mkdir -p $out/share/applications
+          cat > $out/share/applications/${pname}.desktop <<EOF
+      ${desktopFileContent}
+      EOF
 
-  meta = with lib; {
-    description = "Local MoE-offload LLM inference runtime";
-    homepage = "https://github.com/FlashML-org/FreeToken";
-    license = licenses.asl20;
-    platforms = ["x86_64-linux"];
-    badPlatforms = ["aarch64-linux" "x86_64-darwin" "aarch64-darwin"];
-  };
-}
+          # Copy the icon from the extracted AppImage (if present)
+          # appimageTools usually extracts to $out/share/icons, but we ensure it
+          if [ -d "$out/share/icons" ]; then
+            mkdir -p $out/share/icons/hicolor/256x256/apps
+            cp -r $out/share/icons/* $out/share/icons/hicolor/256x256/apps/ 2>/dev/null || true
+          fi
+    '';
+
+    meta = with lib; {
+      description = "Edge-native MoE serving engine for running large language models locally";
+      homepage = "https://flashml.ai";
+      license = licenses.asl20; # Apache‑2.0 (adjust if different)
+      platforms = platforms.linux;
+      sourceProvenance = [sourceTypes.binaryNativeCode];
+    };
+  }

@@ -1,3 +1,4 @@
+# configuration.nix
 {
   pkgs,
   inputs,
@@ -31,12 +32,16 @@ in {
 
   nixpkgs = {
     overlays = [
-      inputs.self.overlays.additions
-      inputs.self.overlays.modifications
-      inputs.self.overlays.stable-packages
+      (import ../overlays {inherit inputs;}).modifications
+      (import ../overlays {inherit inputs;}).stable-packages
     ];
     config = {
       allowUnfree = true;
+      cudaSupport = true;
+      cudaPackages = pkgs.cudaPackages_13_0;
+      problems.handlers = {
+        torch.unsupported-cuda-version = "warn";
+      };
     };
   };
 

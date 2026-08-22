@@ -1,3 +1,4 @@
+# flake.nix
 {
   description = "My system config";
 
@@ -39,16 +40,7 @@
     ];
     forAllSystems = nixpkgs.lib.genAttrs systems;
   in {
-    packages = forAllSystems (
-      system: let
-        pkgs = nixpkgs.legacyPackages.${system};
-      in
-        import ./pkgs pkgs
-    );
-
     formatter = forAllSystems (system: nixpkgs.legacyPackages.${system}.alejandra);
-
-    overlays = import ./overlays {inherit inputs;};
 
     nixosConfigurations = {
       TERRA-NIXOS = nixpkgs.lib.nixosSystem {
@@ -73,7 +65,6 @@
         pkgs = import nixpkgs {
           system = "x86_64-linux";
           overlays = [
-            self.overlays.additions
             self.overlays.modifications
             self.overlays.stable-packages
           ];
