@@ -30,27 +30,27 @@ in
     nativeBuildInputs = [makeWrapper];
 
     extraInstallCommands = ''
-            # Install desktop file
-            mkdir -p $out/share/applications
-            cat > $out/share/applications/${pname}.desktop <<EOF
+      # Install desktop file
+      mkdir -p $out/share/applications
+      cat > $out/share/applications/${pname}.desktop <<EOF
       ${desktopFileContent}
       EOF
 
-            # Copy icon if present
-            if [ -d "$out/share/icons" ]; then
-              mkdir -p $out/share/icons/hicolor/256x256/apps
-              cp -r $out/share/icons/* $out/share/icons/hicolor/256x256/apps/ 2>/dev/null || true
-            fi
+      # Copy icon if present
+      if [ -d "$out/share/icons" ]; then
+        mkdir -p $out/share/icons/hicolor/256x256/apps
+        cp -r $out/share/icons/* $out/share/icons/hicolor/256x256/apps/ 2>/dev/null || true
+      fi
 
-            # Move the original wrapper and create a new one that sets FREETOKEN_FT_BIN
-            mv $out/bin/${pname} $out/bin/${pname}.real
-            cat > $out/bin/${pname} <<EOF
+      # Move the original wrapper and create a new one that sets environment variables
+      mv $out/bin/${pname} $out/bin/${pname}.real
+      cat > $out/bin/${pname} <<'EOF'
       #!/usr/bin/env bash
       export FREETOKEN_FT_BIN="$HOME/.local/bin/ft"
-      export PATH="$HOME/.local/bin:\$PATH"
-      exec $out/bin/${pname}.real "\$@"
+      export PATH="$HOME/.local/bin:$PATH"
+      exec "$(dirname "$0")/freetoken-desktop.real" "$@"
       EOF
-            chmod +x $out/bin/${pname}
+      chmod +x $out/bin/${pname}
     '';
 
     meta = with lib; {
