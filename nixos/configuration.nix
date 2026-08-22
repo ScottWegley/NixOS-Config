@@ -19,6 +19,7 @@
   miscTools = with pkgs; [
     mgba
     python3
+    uv
   ];
 in {
   imports = [
@@ -38,11 +39,6 @@ in {
     ];
     config = {
       allowUnfree = true;
-      cudaSupport = true;
-      cudaPackages = pkgs.cudaPackages_13_0;
-      problems.handlers = {
-        torch.unsupported-cuda-version = "warn";
-      };
     };
   };
 
@@ -102,6 +98,7 @@ in {
   environment.sessionVariables = {
     QT_QPA_PLATFORMTHEME = "generic";
     QT_STYLE_OVERRIDE = "fusion";
+    FREETOKEN_FT_BIN = "/home/scott/.local/bin/ft";
   };
 
   services.lact.enable = true;

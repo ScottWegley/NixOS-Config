@@ -110,7 +110,25 @@ in {
     Service = {
       Type = "oneshot";
       ExecStart = pkgs.writeShellScript "lock-after-boot" ''
-        # ... (keep your existing script) ...
+        # Log everything for debugging
+        exec > /tmp/lock-after-boot.log 2>&1
+        set -x
+        echo "=== Service started at $(date) ==="
+        if ${pkgs.dbus}/bin/dbus-send --session --dest=org.gnome.ScreenSaver \
+             --type=method_call /org/gnome/ScreenSaver org.gnome.ScreenSaver.Lock; then
+          echo "Locked via ScreenSaver"
+        elif ${pkgs.dbus}/bin/dbus-send --session --dest=org.gnome.Shell \
+             --type=method_call /org/gnome/Shell org.gnome.Shell.Eval \
+             string:'Main.shellDBusService.LockScreen()'; then
+          echo "Locked via Shell"
+        else
+          ${pkgs.systemd}/bin/loginctl lock-session "$XDG_SESSION_ID"
+          echo "Locked via loginctl"
+        fi
+
+        marker="$XDG_RUNTIME_DIR/lock-after-boot-done"
+        touch "$marker"
+        echo "Marker created at $(date)"
       '';
       RemainAfterExit = "no";
     };
