@@ -18,6 +18,7 @@
 
   miscTools = with pkgs; [
     mgba
+    python3
   ];
 in {
   imports = [
