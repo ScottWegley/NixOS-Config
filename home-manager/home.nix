@@ -6,7 +6,6 @@
   # Custom packages
   pokeFinder = pkgs.callPackage ../pkgs/pokeFinder.nix {};
   linuxArctisManager = pkgs.callPackage ../pkgs/linuxArctisManager.nix {};
-  freeToken = pkgs.callPackage ../pkgs/freeToken.nix {};
 
   # Tool groups
   coreTools = with pkgs; [
@@ -46,9 +45,10 @@
     eden
     dolphin-emu
     unrar
+    lmstudio
   ];
 
-  customApps = [pokeFinder linuxArctisManager freeToken];
+  customApps = [pokeFinder linuxArctisManager];
 
   obsStudioWrapper = pkgs.writeShellScriptBin "obs-studio" ''
     export __NV_DISABLE_EXPLICIT_SYNC=1

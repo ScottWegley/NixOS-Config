@@ -20,6 +20,7 @@
     mgba
     python3
     uv
+    melonds
   ];
 in {
   imports = [
@@ -98,7 +99,6 @@ in {
   environment.sessionVariables = {
     QT_QPA_PLATFORMTHEME = "generic";
     QT_STYLE_OVERRIDE = "fusion";
-    FREETOKEN_FT_BIN = "/home/scott/.local/bin/ft";
   };
 
   services.lact.enable = true;
