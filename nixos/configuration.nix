@@ -22,7 +22,7 @@
     uv
     melonds
     winetricks
-    wine
+    wineWow64Packages.full
   ];
 in {
   imports = [
