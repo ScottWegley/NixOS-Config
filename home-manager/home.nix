@@ -6,6 +6,7 @@
   # Custom packages
   pokeFinder = pkgs.callPackage ../pkgs/pokeFinder.nix {};
   linuxArctisManager = pkgs.callPackage ../pkgs/linuxArctisManager.nix {};
+  pkhex = pkgs.callPackage ../pkgs/pkhex.nix {};
 
   # Tool groups
   coreTools = with pkgs; [
@@ -48,7 +49,7 @@
     lmstudio
   ];
 
-  customApps = [pokeFinder linuxArctisManager];
+  customApps = [pokeFinder linuxArctisManager pkhex];
 
   obsStudioWrapper = pkgs.writeShellScriptBin "obs-studio" ''
     export __NV_DISABLE_EXPLICIT_SYNC=1

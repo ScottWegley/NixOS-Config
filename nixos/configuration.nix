@@ -21,6 +21,8 @@
     python3
     uv
     melonds
+    winetricks
+    wine
   ];
 in {
   imports = [
