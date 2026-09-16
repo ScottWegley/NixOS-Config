@@ -20,12 +20,6 @@
       url = "github:nix-community/lanzaboote/master";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-
-    # BizHawk (EmuHawk) emulator — ships its own Nix expression with prebuilt releases
-    bizhawk = {
-      url = "github:TASEmulators/BizHawk/master";
-      flake = false;
-    };
   };
 
   outputs = inputs @ {
@@ -33,7 +27,6 @@
     nixpkgs,
     home-manager,
     lanzaboote,
-    bizhawk,
     ...
   }: let
     # System-wide identity settings
@@ -54,7 +47,6 @@
         specialArgs = {
           inherit
             inputs
-            bizhawk
             userName
             userDescription
             hostName
@@ -81,7 +73,6 @@
         extraSpecialArgs = {
           inherit
             inputs
-            bizhawk
             userName
             userDescription
             hostName

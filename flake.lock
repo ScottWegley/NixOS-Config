@@ -1,22 +1,5 @@
 {
   "nodes": {
-    "bizhawk": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1789251874,
-        "narHash": "sha256-9DlhQ7COa9fSmfNmtQXyOU9lk6eGUGHoseKTKu3dUbw=",
-        "owner": "TASEmulators",
-        "repo": "BizHawk",
-        "rev": "44417b1adbd5376cf0622e07ba8ba9841680f07e",
-        "type": "github"
-      },
-      "original": {
-        "owner": "TASEmulators",
-        "ref": "master",
-        "repo": "BizHawk",
-        "type": "github"
-      }
-    },
     "crane": {
       "locked": {
         "lastModified": 1785782307,
@@ -149,7 +132,6 @@
     },
     "root": {
       "inputs": {
-        "bizhawk": "bizhawk",
         "home-manager": "home-manager",
         "lanzaboote": "lanzaboote",
         "nixpkgs": "nixpkgs",

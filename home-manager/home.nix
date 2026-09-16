@@ -52,12 +52,6 @@
 
   customApps = [pokeFinder linuxArctisManager pkhex];
 
-  # EmuHawk (BizHawk) — latest prebuilt release from the upstream Nix expression
-  emuhawk = (import bizhawk {
-    inherit pkgs;
-    system = "x86_64-linux";
-  }).emuhawk-latest-bin;
-
   obsStudioWrapper = pkgs.writeShellScriptBin "obs-studio" ''
     export __NV_DISABLE_EXPLICIT_SYNC=1
     exec ${pkgs.obs-studio}/bin/obs "$@"
@@ -88,7 +82,7 @@ in {
     media
     userTools
     customApps
-    [emuhawk obsStudioWrapper]
+    [obsStudioWrapper]
   ];
 
   systemd.user.services.arctis-manager = {
