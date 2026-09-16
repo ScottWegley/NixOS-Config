@@ -20,6 +20,12 @@
       url = "github:nix-community/lanzaboote/master";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    # BizHawk (EmuHawk) emulator — ships its own Nix expression with prebuilt releases
+    bizhawk = {
+      url = "github:TASEmulators/BizHawk/master";
+      flake = false;
+    };
   };
 
   outputs = inputs @ {
@@ -27,6 +33,7 @@
     nixpkgs,
     home-manager,
     lanzaboote,
+    bizhawk,
     ...
   }: let
     # System-wide identity settings
@@ -47,6 +54,7 @@
         specialArgs = {
           inherit
             inputs
+            bizhawk
             userName
             userDescription
             hostName
@@ -65,14 +73,15 @@
         pkgs = import nixpkgs {
           system = "x86_64-linux";
           overlays = [
-            self.overlays.modifications
-            self.overlays.stable-packages
+            (import ./overlays {inherit inputs;}).modifications
+            (import ./overlays {inherit inputs;}).stable-packages
           ];
           config = {allowUnfree = true;};
         };
         extraSpecialArgs = {
           inherit
             inputs
+            bizhawk
             userName
             userDescription
             hostName

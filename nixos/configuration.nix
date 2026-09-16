@@ -2,6 +2,7 @@
 {
   pkgs,
   inputs,
+  bizhawk,
   lib,
   userName,
   userDescription,
@@ -85,7 +86,7 @@ in {
   home-manager = {
     useGlobalPkgs = true;
     useUserPackages = true;
-    extraSpecialArgs = {inherit inputs userName;};
+    extraSpecialArgs = {inherit inputs bizhawk userName;};
     users = {
       ${userName} = import ../home-manager/home.nix;
     };
