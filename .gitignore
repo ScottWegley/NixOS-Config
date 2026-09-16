@@ -1,2 +1,3 @@
 result/*
-pkgs/**/*.exe
+# NOTE: pkgs/pkhex/PKHeX.exe is intentionally committed — the flake build only
+# sees git-tracked files, and projectpokemon.org requires a forum session to download.
