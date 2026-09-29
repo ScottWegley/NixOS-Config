@@ -24,6 +24,7 @@
     winetricks
     wineWow64Packages.full
     azahar
+    faugus-launcher
   ];
 in {
   imports = [
