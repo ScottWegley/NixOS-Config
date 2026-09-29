@@ -21,9 +21,9 @@
     python3
     uv
     melonds
-    desmume
     winetricks
     wineWow64Packages.full
+    azahar
   ];
 in {
   imports = [
