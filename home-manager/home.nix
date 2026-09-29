@@ -8,6 +8,7 @@
   pokeFinder = pkgs.callPackage ../pkgs/pokeFinder.nix {};
   linuxArctisManager = pkgs.callPackage ../pkgs/linuxArctisManager.nix {};
   pkhex = pkgs.callPackage ../pkgs/pkhex.nix {};
+  helium = pkgs.callPackage ../pkgs/helium.nix {};
 
   # Tool groups
   coreTools = with pkgs; [
@@ -18,8 +19,9 @@
     sbctl
   ];
 
-  browsers = with pkgs; [
-    floorp-bin
+  browsers = [
+    pkgs.floorp-bin
+    helium
   ];
 
   communication = with pkgs; [
