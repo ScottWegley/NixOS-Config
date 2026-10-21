@@ -15,7 +15,7 @@
     # flake.lock is past 09233318 (i.e. after nixos-unstable merges master).
     openrazerFix = kernelPackages:
       kernelPackages.extend (_self: super: {
-        openrazer = super.callPackage ../pkgs/openrazer-driver.nix { };
+        openrazer = super.callPackage ../pkgs/openrazer-driver.nix {};
       });
   in {
     # Apply the fix to every top-level kernel package set that carries an
