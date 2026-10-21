@@ -1,0 +1,14 @@
+--- a/tests/test_frontend.py
++++ b/tests/test_frontend.py
+@@ -772,7 +772,10 @@
+     invalid_mecab_features = copy.deepcopy(valid_mecab_features)
+     invalid_mecab_features[0] = 123  # type: ignore[assignment]
+ 
+-    with pytest.raises(TypeError, match="must be str"):
++    # Cython >= 3.2 auto-inserts element-type checks from the list[str]
++    # annotation, which fire before the explicit check and raise
++    # "Expected str, got int" on Python 3.14 (was "must be str").
++    with pytest.raises(TypeError, match="str"):
+         pyopenjtalk.run_njd_from_mecab(invalid_mecab_features)
+ 
+     njd_features = pyopenjtalk.run_njd_from_mecab(valid_mecab_features)
