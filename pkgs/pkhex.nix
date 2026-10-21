@@ -4,7 +4,7 @@
 }:
 stdenvNoCC.mkDerivation rec {
   pname = "pkhex";
-  version = "26.08.26";
+  version = "26.10.18";
 
   # The executable is vendored in ./pkhex/ (provided by the user; not
   # distributed via GitHub releases).
