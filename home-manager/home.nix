@@ -27,7 +27,8 @@
   communication = with pkgs; [
     proton-pass
     proton-vpn
-    discord
+    # Discord from stable nixpkgs (nixos-25.11) instead of unstable
+    pkgs.stable.discord
     filezilla
   ];
 
