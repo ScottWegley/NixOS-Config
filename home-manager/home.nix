@@ -5,7 +5,6 @@
   ...
 }: let
   # Custom packages
-  pokeFinder = pkgs.callPackage ../pkgs/pokeFinder.nix {};
   linuxArctisManager = pkgs.callPackage ../pkgs/linuxArctisManager.nix {};
   pkhex = pkgs.callPackage ../pkgs/pkhex.nix {};
   helium = pkgs.callPackage ../pkgs/helium.nix {};
@@ -28,7 +27,7 @@
     proton-pass
     proton-vpn
     # Discord from stable nixpkgs (nixos-25.11) instead of unstable
-    pkgs.stable.discord
+    discord
     filezilla
   ];
 
@@ -53,7 +52,7 @@
     lmstudio
   ];
 
-  customApps = [pokeFinder linuxArctisManager pkhex];
+  customApps = [pkgs.pokefinder linuxArctisManager pkhex];
 
   obsStudioWrapper = pkgs.writeShellScriptBin "obs-studio" ''
     export __NV_DISABLE_EXPLICIT_SYNC=1

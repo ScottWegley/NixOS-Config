@@ -40,6 +40,8 @@ Local deviations from stock nixpkgs. **Keep this section current** — every wor
 | 2. **pyopenjtalk-plus on Python 3.14** — Cython ≥ 3.2 auto-inserts element-type checks from the `list[str]` annotation, so `run_njd_from_mecab` raises "Expected str, got int" instead of "must be str", failing one test's regex match (1 failed, 1678 passed). | `pkgs/pyopenjtalk-plus-python314-test.patch` — relaxes the expected error message to `match="str"`. Applied via `pyopenjtalkPlusFix`, which patches only canonical versioned sets (`python312Packages` …) — patching aliases like `python3Packages` too would apply it twice and fail with "previously applied patch detected". | The locked nixpkgs rev contains PR #576063 (backport of upstream commit `90b644f`). Then delete the patch file, `pyopenjtalkPlusFix`, `pyopenjtalkPlusSets`, and the trailing `// pyopenjtalkPlusSets` merge in `overlays/default.nix`. |
 | 3. **calibre 9.16.0 install check** — the fresh bump (nixpkgs PR #573023) fails its own `python setup.py test` in the sandbox: `test_speech_dispatcher` can't import the speechd Python client, and `test_merge_file` can't load its epub fixture. | `overlays/default.nix` — `overrideAttrs` that keeps `doInstallCheck = true` (version/udev checks still run) but replaces only the test-running `installCheckPhase` with a no-op. | Upstream calibre excludes or fixes those two tests and a newer version lands in nixpkgs. Then delete the `calibre = prev.calibre.overrideAttrs …` block. |
 
+> **Re-verified 2026-10-23** against locked rev `02c087f3fe`: all three fixes are still on master-only / unfixed upstream, so none can be removed yet. To re-check after a `nix flake update`, compare the fix commit to the new locked rev — e.g. `curl -s https://api.github.com/repos/NixOS/nixpkgs/compare/<fix-sha>...<locked-rev>` and look at `status` (`ahead` = safe to remove, `diverged`/`behind` = still needed).
+
 ## Structure
 
 ### `flake.nix`
@@ -81,7 +83,7 @@ System-level application configurations that enable NixOS modules (as opposed to
 
 ### `home-manager/home.nix`
 User-level configuration managed by Home Manager (running as a NixOS module).  Uses `useGlobalPkgs` so it shares the system's nixpkgs instance and overlays.  Manages:
-- **User packages** (grouped in `let` bindings): core tools (alejandra, git, wget, gh, sbctl), browsers (Floorp), communication (Proton Pass, ProtonVPN, Discord, FileZilla), media (Obsidian, qBittorrent, VLC, GParted, Vesktop), utilities (Polychromatic, RazerGenie, QDirStat, Kdenlive, LocalSend, Eden, Dolphin Emu, LM Studio, etc.), custom apps (PokeFinder, Linux Arctis Manager), and an OBS Studio wrapper.
+- **User packages** (grouped in `let` bindings): core tools (alejandra, git, wget, gh, sbctl), browsers (Floorp), communication (Proton Pass, ProtonVPN, Discord, FileZilla), media (Obsidian, qBittorrent, VLC, GParted, Vesktop), utilities (Polychromatic, RazerGenie, QDirStat, Kdenlive, LocalSend, Eden, Dolphin Emu, LM Studio, etc.), custom apps (Linux Arctis Manager), and an OBS Studio wrapper.
 - **Programs**: VS Code, Calibre, Fastfetch, Git, SSH client (with `ssh-agent` service).
 - **User services**: Linux Arctis Manager daemon (`arctis-manager`) and a one-shot screen lock after boot/autologin (`lock-after-boot`).
 
@@ -92,8 +94,7 @@ Defines three overlays; `modifications` and `stable-packages` are applied in bot
 - `stable-packages` — Makes `nixpkgs-stable` available as `pkgs.stable` for version rollback.
 
 ### `pkgs/default.nix`
-Custom package definitions.  Currently defines four apps:
-- `pokeFinder` — Wraps the [PokeFinder](https://github.com/Admiral-Fish/PokeFinder) Pokémon RNG finder binary (Qt6).
+Custom package definitions.  Currently defines three apps:
 - `linuxArctisManager` — Open-source replacement for SteelSeries GG to manage Arctis headsets on Linux.
 - `pkhex` — PKHeX wrapper; the vendored `PKHeX.exe` must be git-tracked or it won't exist in the flake's store copy (see `.gitignore`).
 - `helium` — Helium hotspots app.
