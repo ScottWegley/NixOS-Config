@@ -83,8 +83,8 @@ in {
       comment = "All-in-one cross-platform voice and text chat for gamers";
       exec = "${discordWrapper}/bin/discord %U";
       icon = "${pkgs.discord}/share/icons/hicolor/256x256/apps/discord.png";
-      categories = [ "Network" "InstantMessaging" ];
-      mimeType = [ "x-scheme-handler/discord" ];
+      categories = ["Network" "InstantMessaging"];
+      mimeType = ["x-scheme-handler/discord"];
       settings.StartupWMClass = "discord";
     };
 
@@ -94,7 +94,7 @@ in {
       comment = "Free and Open Source Streaming/Recording Software";
       exec = "${obsStudioWrapper}/bin/obs-studio %U";
       icon = "${pkgs.obs-studio}/share/icons/hicolor/scalable/apps/com.obsproject.Studio.svg";
-      categories = [ "AudioVideo" "Recorder" ];
+      categories = ["AudioVideo" "Recorder"];
       startupNotify = true;
       settings.StartupWMClass = "obs";
     };
