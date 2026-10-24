@@ -73,6 +73,33 @@ in {
     homeDirectory = "/home/${userName}";
   };
 
+  # The wrappers above replace the packaged binaries, so the .desktop files
+  # shipped inside pkgs.discord / pkgs.obs-studio (Exec=Discord / Exec=obs)
+  # are never installed. Register our own entries pointing at the wrappers.
+  xdg.desktopEntries = {
+    discord = {
+      name = "Discord";
+      genericName = "Instant Messenger";
+      comment = "All-in-one cross-platform voice and text chat for gamers";
+      exec = "${discordWrapper}/bin/discord %U";
+      icon = "${pkgs.discord}/share/icons/hicolor/256x256/apps/discord.png";
+      categories = [ "Network" "InstantMessaging" ];
+      mimeType = [ "x-scheme-handler/discord" ];
+      settings.StartupWMClass = "discord";
+    };
+
+    obs-studio = {
+      name = "OBS Studio";
+      genericName = "Streaming/Recording Software";
+      comment = "Free and Open Source Streaming/Recording Software";
+      exec = "${obsStudioWrapper}/bin/obs-studio %U";
+      icon = "${pkgs.obs-studio}/share/icons/hicolor/scalable/apps/com.obsproject.Studio.svg";
+      categories = [ "AudioVideo" "Recorder" ];
+      startupNotify = true;
+      settings.StartupWMClass = "obs";
+    };
+  };
+
   programs.vscode.enable = true;
   programs.calibre.enable = true;
   programs.fastfetch.enable = true;
