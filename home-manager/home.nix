@@ -26,8 +26,6 @@
   communication = with pkgs; [
     proton-pass
     proton-vpn
-    # Discord from stable nixpkgs (nixos-25.11) instead of unstable
-    discord
     filezilla
   ];
 
@@ -58,6 +56,13 @@
     export __NV_DISABLE_EXPLICIT_SYNC=1
     exec ${pkgs.obs-studio}/bin/obs "$@"
   '';
+
+  # Workaround for NVIDIA explicit-sync rendering bug (frozen/stale video,
+  # e.g. Discord screen shares) on X11 with the proprietary driver.
+  discordWrapper = pkgs.writeShellScriptBin "discord" ''
+    export __NV_DISABLE_EXPLICIT_SYNC=1
+    exec ${pkgs.discord}/bin/discord "$@"
+  '';
 in {
   imports = [
     # ./nvim.nix
@@ -84,7 +89,8 @@ in {
     media
     userTools
     customApps
-    [obsStudioWrapper]
+    # Discord from stable nixpkgs (nixos-25.11) instead of unstable, wrapped for NVIDIA
+    [obsStudioWrapper discordWrapper]
   ];
 
   systemd.user.services.arctis-manager = {
