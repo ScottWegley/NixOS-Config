@@ -112,6 +112,55 @@ in {
     package = pkgs.mlocate;
   };
 
+  # Temporary fix for microsoft/vscode#343101 / NixOS/nixpkgs#573021: nixpkgs
+  # installs VS Code's bundled copilot-sdk runtimes without execute permission
+  # (mode 0444), so the Copilot Agent Host cannot launch them. This one-shot
+  # copies each such runtime to a temp file, makes it executable, and bind-mounts
+  # that over the original at boot. It runs as root, so `mount` needs no sudo.
+  # Removal condition: drop once nixpkgs ships VS Code with executable runtimes
+  # (or an overlay fixes it). Re-run after a rebuild via `sudo systemctl restart
+  # copilot-runtime-fix`.
+  systemd.services.copilot-runtime-fix = {
+    description = "Bind-mount executable copies over VS Code copilot-sdk runtimes";
+    wantedBy = [ "multi-user.target" ];
+    after = [ "multi-user.target" ];
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = pkgs.writeShellScript "copilot-runtime-fix" ''
+        #!/bin/sh
+        set -u
+        log=/run/copilot-runtime-fix.log
+        say() { echo "$*" | tee -a "$log"; }
+
+        say "=== copilot-runtime-fix started at $(date) ==="
+        failures=0
+
+        # Nix store paths never contain whitespace, so word-splitting is safe.
+        # (A `find | while` pipe would run the loop in a subshell and lose $failures.)
+        for target in $(find /nix/store -path '*copilot-sdk-linux-x64*' -type f -name 'copilot-runtime' 2>/dev/null); do
+          if [ -x "$target" ]; then
+            say "skipped (already executable): $target"
+            continue
+          fi
+
+          tmpf=$(mktemp) || { say "failed mktemp: $target"; failures=$((failures+1)); continue; }
+          cp "$target" "$tmpf" || { say "failed copy: $target"; failures=$((failures+1)); continue; }
+          chmod u+x "$tmpf"
+
+          if mount --bind "$tmpf" "$target"; then
+            say "bound: $target"
+          else
+            say "failed mount: $target"
+            failures=$((failures+1))
+          fi
+        done
+
+        say "=== copilot-runtime-fix finished at $(date), failures=$failures ==="
+        exit "$failures"
+      '';
+    };
+  };
+
   fileSystems."/mnt/nix-extra" = {
     device = "/dev/disk/by-uuid/976723e9-8d65-4359-8b72-b1cfdc3e0a8e";
     fsType = "ext4";

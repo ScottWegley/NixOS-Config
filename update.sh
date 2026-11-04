@@ -54,14 +54,16 @@ echo "      $(wc -l < "$AFTER") store paths in new system"
 echo "==> [5/5] Diffing closures..."
 diff "$BEFORE" "$AFTER" > "$DIFF_OUT" || true   # diff exits 1 when files differ
 
-added=$(comm -13 "$BEFORE" "$AFTER" | wc -l)
-removed=$(comm -23 "$BEFORE" "$AFTER" | wc -l)
+# Count per unique package name (strip the store hash), so a single package
+# that maps to multiple store paths (e.g. -dev/-static variants) is counted once.
+added=$(comm -13 "$BEFORE" "$AFTER" | strip_hash | sort -u | wc -l)
+removed=$(comm -23 "$BEFORE" "$AFTER" | strip_hash | sort -u | wc -l)
 
 echo
 if [[ $added -eq 0 && $removed -eq 0 ]]; then
   echo "No package changes — system closure is identical."
 else
-  echo "Summary: $added paths added, $removed paths removed (full diff: $DIFF_OUT)"
+  echo "Summary: $added packages added, $removed packages removed (full diff: $DIFF_OUT)"
 
   list_changes() {
     local label="$1" file_a="$2" file_b="$3"

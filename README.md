@@ -34,6 +34,10 @@ sudo nix-collect-garbage -d
 
 Local deviations from stock nixpkgs. **Keep this section current** — every workaround has a removal condition, and after each `nix flake update` you should check whether any of them can be deleted before rebuilding.
 
+### VS Code copilot-sdk runtimes lack execute permission
+- **Issue:** [microsoft/vscode#343101](https://github.com/microsoft/vscode/issues/343101) / [NixOS/nixpkgs#573021](https://github.com/NixOS/nixpkgs/issues/573021). nixpkgs installs VS Code's bundled `copilot-sdk-linux-x64` runtimes as mode `0444`, so the Copilot Agent Host can't launch them ("Cannot call write after a stream was destroyed").
+- **Workaround:** A boot-time one-shot systemd service, `copilot-runtime-fix` (defined in [nixos/configuration.nix](./nixos/configuration.nix)), copies each `/nix/store/*copilot-sdk-linux-x64*.../copilot-runtime` to a temp file, makes it executable, and bind-mounts that over the original.
+- **Removal condition:** Delete the service once nixpkgs ships VS Code with executable runtimes (or an overlay fixes it). Re-run after a rebuild via `sudo systemctl restart copilot-runtime-fix`.
 
 ## Structure
 
