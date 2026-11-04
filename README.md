@@ -34,13 +34,6 @@ sudo nix-collect-garbage -d
 
 Local deviations from stock nixpkgs. **Keep this section current** — every workaround has a removal condition, and after each `nix flake update` you should check whether any of them can be deleted before rebuilding.
 
-| # | What broke | Local fix (files) | Remove when |
-|---|---|---|---|
-| 1. **openrazer / kmodigest** — nixpkgs PR #571181 made the kernel module aggregator require a `.ko.cer` certificate for every module in `modules.dep`; the stock openrazer driver copied its `.ko` files by hand (no `modules_install`), so no certificates were generated and the build failed with exit 123. | `pkgs/openrazer-driver.nix` — local replacement that installs via stdenv's built-in `modules_install`, letting kmodigest sign each module. Wired in through the `openrazerFix` overlay, applied to all seven top-level `linuxPackages*` sets (this system uses `linuxPackages_latest`). | The locked nixpkgs rev is past commit `09233318` (PR #576293). Then delete `pkgs/openrazer-driver.nix`, the `openrazerFix` function, and all seven `linuxPackages* = openrazerFix …` lines in `overlays/default.nix`. |
-| 2. **pyopenjtalk-plus on Python 3.14** — Cython ≥ 3.2 auto-inserts element-type checks from the `list[str]` annotation, so `run_njd_from_mecab` raises "Expected str, got int" instead of "must be str", failing one test's regex match (1 failed, 1678 passed). | `pkgs/pyopenjtalk-plus-python314-test.patch` — relaxes the expected error message to `match="str"`. Applied via `pyopenjtalkPlusFix`, which patches only canonical versioned sets (`python312Packages` …) — patching aliases like `python3Packages` too would apply it twice and fail with "previously applied patch detected". | The locked nixpkgs rev contains PR #576063 (backport of upstream commit `90b644f`). Then delete the patch file, `pyopenjtalkPlusFix`, `pyopenjtalkPlusSets`, and the trailing `// pyopenjtalkPlusSets` merge in `overlays/default.nix`. |
-| 3. **calibre 9.16.0 install check** — the fresh bump (nixpkgs PR #573023) fails its own `python setup.py test` in the sandbox: `test_speech_dispatcher` can't import the speechd Python client, and `test_merge_file` can't load its epub fixture. | `overlays/default.nix` — `overrideAttrs` that keeps `doInstallCheck = true` (version/udev checks still run) but replaces only the test-running `installCheckPhase` with a no-op. | Upstream calibre excludes or fixes those two tests and a newer version lands in nixpkgs. Then delete the `calibre = prev.calibre.overrideAttrs …` block. |
-
-> **Re-verified 2026-10-23** against locked rev `02c087f3fe`: all three fixes are still on master-only / unfixed upstream, so none can be removed yet. To re-check after a `nix flake update`, compare the fix commit to the new locked rev — e.g. `curl -s https://api.github.com/repos/NixOS/nixpkgs/compare/<fix-sha>...<locked-rev>` and look at `status` (`ahead` = safe to remove, `diverged`/`behind` = still needed).
 
 ## Structure
 
@@ -90,7 +83,7 @@ User-level configuration managed by Home Manager (running as a NixOS module).  U
 ### `overlays/default.nix`
 Defines three overlays; `modifications` and `stable-packages` are applied in both `nixos/configuration.nix` and the flake's Home Manager pkgs:
 - `additions` — Exposes custom packages from the `pkgs/` directory.
-- `modifications` — Overrides existing nixpkgs packages; currently carries the temporary workarounds tracked in [Non-Standard Configs & Workarounds](#non-standard-configs--workarounds).
+- `modifications` — Overrides existing nixpkgs packages (currently empty; see [Non-Standard Configs & Workarounds](#non-standard-configs--workarounds) for history).
 - `stable-packages` — Makes `nixpkgs-stable` available as `pkgs.stable` for version rollback.
 
 ### `pkgs/default.nix`
