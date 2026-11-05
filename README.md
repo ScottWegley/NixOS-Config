@@ -39,6 +39,18 @@ Local deviations from stock nixpkgs. **Keep this section current** — every wor
 - **Workaround:** A boot-time one-shot systemd service, `copilot-runtime-fix` (defined in [nixos/configuration.nix](./nixos/configuration.nix)), copies each `/nix/store/*copilot-sdk-linux-x64*.../copilot-runtime` to a temp file, makes it executable, and bind-mounts that over the original.
 - **Removal condition:** Delete the service once nixpkgs ships VS Code with executable runtimes (or an overlay fixes it). Re-run after a rebuild via `sudo systemctl restart copilot-runtime-fix`.
 
+### Strata local inference API (RTX 5090)
+- **What:** [Strata](https://github.com/Niko1221/Strata), the engine that runs Qwen3.8-Flash-Next (125B MoE, ~6B active) on a single NVIDIA GPU and serves it over an OpenAI-/Anthropic-compatible API on localhost (`http://127.0.0.1:8080`). Integrated via the [strata-nix](https://github.com/Yunor743/strata.nix) flake input (not used as-is — only its `nixosModules.default` and packages).
+- **Local deviation:** The upstream flake builds the CUDA engine for `sm_89` (RTX 40) by default. This box has an RTX 5090 (Blackwell, `sm_120`), so [nixos/core/strata.nix](./nixos/core/strata.nix) rebuilds the engine with `cudaArch = "120"` and points the serve bundle's `passthru.engine` at it. The serve scripts are identical; only the engine binary changes.
+- **On-demand, not always-on:** Strata is defined as a unit but *not* enabled at boot — there is no `wantedBy` symlink, so it does not start automatically. Start/stop it like an app:
+  - `sudo systemctl start strata` (first start downloads ~70 GB of model shards into `/var/lib/strata`, builds the pack + MTP draft layer, writes `config.json`, then starts `strata-serve`)
+  - `sudo systemctl stop strata`
+  - `systemctl status strata`
+  Loading pushes 35–55 GB into RAM and takes 1–3 min. The engine build itself is a one-time ~20–40 min compile (cached after).
+- **API:** `http://127.0.0.1:8080/v1/chat/completions` (OpenAI) and `/v1/messages` (Anthropic); web chat at `http://127.0.0.1:8080/`.
+- **Options:** See the [strata.nix README](https://github.com/Yunor743/strata.nix#options-services-strata) for `services.strata.*` (family, model, context, host/port, gpus, lowRam, sampling, mcpServers, extraEngineArgs). Defaults here: `family = swift`, `model = IQ2_XS`, `context = 32768`, loopback only.
+- **Removal condition:** None — this is a permanent local service. To disable, set `services.strata.enable = false` in [nixos/core/strata.nix](./nixos/core/strata.nix).
+
 ## Structure
 
 ### `flake.nix`
@@ -73,6 +85,7 @@ Modularized core system configuration, united by `default.nix` which imports:
 | `locale.nix` | Timezone (America/Phoenix) and locale settings (en_US.UTF-8) |
 | `networking.nix` | Hostname, firewall rules, and NetworkManager |
 | `rdp.nix` | Enables GNOME Remote Desktop (RDP) and wires it into the graphical target. The supporting system changes (user linger, GDM autologin) live in `nixos/configuration.nix`. |
+| `strata.nix` | Strata local inference API (Qwen3.8-Flash-Next 125B MoE) on the RTX 5090; engine rebuilt for sm_120 |
 
 ### `sysapps/`
 System-level application configurations that enable NixOS modules (as opposed to user-level apps in Home Manager).  Currently contains:

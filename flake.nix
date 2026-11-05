@@ -20,6 +20,9 @@
       url = "github:nix-community/lanzaboote/master";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    # Strata: local Qwen3.8-Flash-Next inference API (see nixos/core/strata.nix)
+    strata-nix.url = "github:Yunor743/strata.nix";
   };
 
   outputs = inputs @ {
@@ -27,6 +30,7 @@
     nixpkgs,
     home-manager,
     lanzaboote,
+    strata-nix,
     ...
   }: let
     # System-wide identity settings
@@ -56,6 +60,13 @@
           ./nixos/configuration.nix
 
           lanzaboote.nixosModules.lanzaboote
+
+          # Strata: load the upstream module first, then our override last so it
+          # can drop the auto-start symlink (on-demand service, not always-on).
+          strata-nix.nixosModules.default
+
+          # Loaded after strata-nix so its `wantedBy = []` wins.
+          ./nixos/core/strata.nix
         ];
       };
     };
