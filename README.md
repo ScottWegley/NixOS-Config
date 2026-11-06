@@ -40,15 +40,30 @@ Local deviations from stock nixpkgs. **Keep this section current** — every wor
 - **Removal condition:** Delete the service once nixpkgs ships VS Code with executable runtimes (or an overlay fixes it). Re-run after a rebuild via `sudo systemctl restart copilot-runtime-fix`.
 
 ### Strata local inference API (RTX 5090)
-- **What:** [Strata](https://github.com/Niko1221/Strata), the engine that runs Qwen3.8-Flash-Next (125B MoE, ~6B active) on a single NVIDIA GPU and serves it over an OpenAI-/Anthropic-compatible API on localhost (`http://127.0.0.1:8080`). Integrated via the [strata-nix](https://github.com/Yunor743/strata.nix) flake input (not used as-is — only its `nixosModules.default` and packages).
-- **Local deviation:** The upstream flake builds the CUDA engine for `sm_89` (RTX 40) by default. This box has an RTX 5090 (Blackwell, `sm_120`), so [nixos/core/strata.nix](./nixos/core/strata.nix) rebuilds the engine with `cudaArch = "120"` and points the serve bundle's `passthru.engine` at it. The serve scripts are identical; only the engine binary changes.
+- **What:** [Strata](https://github.com/Niko1221/Strata), the engine that runs Qwen3.8-Flash-Next (125B MoE, ~6B active) on a single NVIDIA GPU and serves it over an OpenAI-/Anthropic-compatible API on localhost (`http://127.0.0.1:8080`). We maintain our own Nix definitions for it — the engine build ([pkgs/strata-engine.nix](./pkgs/strata-engine.nix)), the serve bundle ([pkgs/strata-serve.nix](./pkgs/strata-serve.nix) + [pkgs/prefetch.py](./pkgs/prefetch.py)), and the NixOS module ([nixos/core/strata.nix](./nixos/core/strata.nix)) — so we control defaults and behaviour without depending on a third-party flake.
+- **Source pins:** `flake.nix` pins [Niko1221/Strata](https://github.com/Niko1221/Strata) at commit `61b3fb5...` and the matching llama.cpp/ggml commit (`3cf03257...`, read from Strata's `third_party/ggml/VERSION.txt`). We keep these **pinned** (not tracking `main`) because:
+  - Strata is a fast-moving research project with no stable release cadence — `main` can break between commits.
+  - The engine is an expensive GPU build (~20–40 min); we want it to rebuild only when *we* ask, not when upstream moves.
+  - This is a local-only (loopback) service, so there's little pressure to be on the absolute latest.
+
+  **When you're ready to move the pin** (e.g., for a bugfix or new feature):
+  1. Find the commit hash of the Strata commit you want (`git log` / GitHub).
+  2. In `flake.nix`, change the `strata` input from the old commit to the new one:
+     ```nix
+     strata = { url = "github:Niko1221/Strata/<NEW_COMMIT>"; flake = false; };
+     ```
+  3. Run `nix flake lock --update-input strata`. This re-resolves the matching llama.cpp/ggml commit automatically (the pin-check in `flake.nix` reads Strata's `third_party/ggml/VERSION.txt` and asserts it matches). If it throws, set `inputs.llama-pinned.url` to the new ggml commit manually.
+  4. Rebuild: `sudo ./update.sh`.
+
+  **To unpin (track `main`) instead:** change the input to `github:Niko1221/Strata/main`, then adjust the pin-check logic in `flake.nix` so it follows whatever ggml commit the new Strata pins, rather than asserting a fixed match.
+- **Local default:** The engine is built for `sm_120` (RTX 5090 / Blackwell) by default in [pkgs/strata-engine.nix](./pkgs/strata-engine.nix); the serve bundle carries it under `passthru.engine`. Override with `override { cudaArch = "89"; }` for an RTX 40 card.
 - **On-demand, not always-on:** Strata is defined as a unit but *not* enabled at boot — there is no `wantedBy` symlink, so it does not start automatically. Start/stop it like an app:
   - `sudo systemctl start strata` (first start downloads ~70 GB of model shards into `/var/lib/strata`, builds the pack + MTP draft layer, writes `config.json`, then starts `strata-serve`)
   - `sudo systemctl stop strata`
   - `systemctl status strata`
   Loading pushes 35–55 GB into RAM and takes 1–3 min. The engine build itself is a one-time ~20–40 min compile (cached after).
 - **API:** `http://127.0.0.1:8080/v1/chat/completions` (OpenAI) and `/v1/messages` (Anthropic); web chat at `http://127.0.0.1:8080/`.
-- **Options:** See the [strata.nix README](https://github.com/Yunor743/strata.nix#options-services-strata) for `services.strata.*` (family, model, context, host/port, gpus, lowRam, sampling, mcpServers, extraEngineArgs). Defaults here: `family = swift`, `model = IQ2_XS`, `context = 32768`, loopback only.
+- **Options:** `services.strata.*` (family, model, context, host/port, gpus, lowRam, sampling, mcpServers, extraEngineArgs) are defined in [nixos/core/strata.nix](./nixos/core/strata.nix). Defaults here: `family = swift`, `model = IQ2_XS`, `context = 32768`, loopback only.
 - **Removal condition:** None — this is a permanent local service. To disable, set `services.strata.enable = false` in [nixos/core/strata.nix](./nixos/core/strata.nix).
 
 ## Structure

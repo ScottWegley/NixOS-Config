@@ -112,6 +112,19 @@ in {
     package = pkgs.mlocate;
   };
 
+  # Strata: local Qwen3.8-Flash-Next inference API (RTX 5090 / sm_120).
+  # Context over speed: run at the max trained context (262144 = 256K) so we get
+  # the most context with no YaRN rope-scaling extrapolation (full quality). KV
+  # streaming (--kv-resident, added automatically by strata-prefetch for context
+  # >= 64K) keeps only a fraction of the KV cache in VRAM and streams the rest
+  # from RAM — fine on this box's 128 GB. MTP speculative decoding is already
+  # enabled by default (--spec 4), giving speed "for free" without hurting quality.
+  # On-demand: no wantedBy, so it does NOT start at boot; `sudo systemctl start strata`.
+  services.strata = {
+    enable = true;
+    context = 262144;
+  };
+
   # Temporary fix for microsoft/vscode#343101 / NixOS/nixpkgs#573021: nixpkgs
   # installs VS Code's bundled copilot-sdk runtimes without execute permission
   # (mode 0444), so the Copilot Agent Host cannot launch them. This one-shot
