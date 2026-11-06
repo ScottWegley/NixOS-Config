@@ -135,8 +135,8 @@ in {
   # copilot-runtime-fix`.
   systemd.services.copilot-runtime-fix = {
     description = "Bind-mount executable copies over VS Code copilot-sdk runtimes";
-    wantedBy = [ "multi-user.target" ];
-    after = [ "multi-user.target" ];
+    wantedBy = ["multi-user.target"];
+    after = ["multi-user.target"];
     serviceConfig = {
       Type = "oneshot";
       ExecStart = pkgs.writeShellScript "copilot-runtime-fix" ''

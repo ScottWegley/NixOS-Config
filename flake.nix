@@ -61,27 +61,32 @@
     # We no longer depend on the upstream strata.nix flake (Yunor743/strata.nix).
     strataPkgs = let
       system = "x86_64-linux";
-      pkgs = import nixpkgs { inherit system; config.allowUnfree = true; };
+      pkgs = import nixpkgs {
+        inherit system;
+        config.allowUnfree = true;
+      };
 
-      version =
-        let
-          projectLine = builtins.head (builtins.filter
-            (l: builtins.match "project\\(strata VERSION.*" l != null)
-            (nixpkgs.lib.splitString "\n"
-              (builtins.readFile (inputs.strata + "/CMakeLists.txt"))));
-        in
-          builtins.head (builtins.match "project\\(strata VERSION ([0-9.]+).*" projectLine);
+      version = let
+        projectLine = builtins.head (builtins.filter
+          (l: builtins.match "project\\(strata VERSION.*" l != null)
+          (nixpkgs.lib.splitString "\n"
+            (builtins.readFile (inputs.strata + "/CMakeLists.txt"))));
+      in
+        builtins.head (builtins.match "project\\(strata VERSION ([0-9.]+).*" projectLine);
 
-      ggmlPin = builtins.head (builtins.match "([0-9a-f]+).*"
-        (builtins.readFile (inputs.strata + "/third_party/ggml/VERSION.txt")));
+      ggmlPin =
+        builtins.head (builtins.match "([0-9a-f]+).*"
+          (builtins.readFile (inputs.strata + "/third_party/ggml/VERSION.txt")));
 
       pinChecked =
-        if (inputs.llama-pinned.rev or "") == ggmlPin then true
-        else throw ''
-          Strata's source pins llama.cpp/ggml at ${ggmlPin}, but this flake locks
-          llama-pinned at ${inputs.llama-pinned.rev or "an unknown revision"}.
-          Fix: set inputs.llama-pinned.url = "github:ggml-org/llama.cpp/${ggmlPin}" in
-          flake.nix, then run: nix flake lock --update-input llama-pinned'';
+        if (inputs.llama-pinned.rev or "") == ggmlPin
+        then true
+        else
+          throw ''
+            Strata's source pins llama.cpp/ggml at ${ggmlPin}, but this flake locks
+            llama-pinned at ${inputs.llama-pinned.rev or "an unknown revision"}.
+            Fix: set inputs.llama-pinned.url = "github:ggml-org/llama.cpp/${ggmlPin}" in
+            flake.nix, then run: nix flake lock --update-input llama-pinned'';
 
       strataEngine = pkgs.callPackage ./pkgs/strata-engine.nix {
         inherit version ggmlPin pinChecked;
@@ -123,7 +128,7 @@
 
           # Strata: our own module (on-demand service, sm_120 engine). Pass the
           # serve bundle in; it carries the engine under passthru.engine.
-          (import ./nixos/core/strata.nix { strataServe = strataPkgs.strata-serve; })
+          (import ./nixos/core/strata.nix {strataServe = strataPkgs.strata-serve;})
         ];
       };
     };
